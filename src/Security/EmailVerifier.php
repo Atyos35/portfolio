@@ -21,22 +21,36 @@ class EmailVerifier
 
     public function sendEmailConfirmation(string $verifyEmailRouteName, User $user, TemplatedEmail $email): void
     {
-        $signatureComponents = $this->verifyEmailHelper->generateSignature(
-            $verifyEmailRouteName,
-            (string) $user->getId(),
-            (string) $user->getEmail(),
-            ['id' => $user->getId()]
-        );
+        try {
+            // Générer la signature pour le lien de confirmation
+            $signatureComponents = $this->verifyEmailHelper->generateSignature(
+                $verifyEmailRouteName,
+                (string) $user->getId(),
+                (string) $user->getEmail(),
+                ['id' => $user->getId()]
+            );
 
-        $context = $email->getContext();
-        $context['signedUrl'] = $signatureComponents->getSignedUrl();
-        $context['expiresAtMessageKey'] = $signatureComponents->getExpirationMessageKey();
-        $context['expiresAtMessageData'] = $signatureComponents->getExpirationMessageData();
+            // Préparer le contexte de l'email avec les données de signature
+            $context = $email->getContext();
+            $context['signedUrl'] = $signatureComponents->getSignedUrl();
+            $context['expiresAtMessageKey'] = $signatureComponents->getExpirationMessageKey();
+            $context['expiresAtMessageData'] = $signatureComponents->getExpirationMessageData();
 
-        $email->context($context);
+            $email->context($context);
 
-        $this->mailer->send($email);
+            // Envoyer l'e-mail
+            $this->mailer->send($email);
+
+        } catch (\Exception $e) {
+            // Capture l'exception et logge l'erreur ou fais autre chose
+            // Tu peux aussi ajouter un message personnalisé si tu veux informer l'utilisateur
+            dd($e->getMessage());
+
+            // Tu peux ajouter une gestion d'erreur ici, comme un message flash
+            $this->addFlash('error', 'An error occurred while sending the email confirmation. Please try again.');
+        }
     }
+
 
     /**
      * @throws VerifyEmailExceptionInterface
