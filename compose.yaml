@@ -49,6 +49,20 @@ services:
     volumes:
       - database_data:/var/lib/mysql:rw
 
+  mailer:
+    image: axllent/mailpit
+    restart: unless-stopped
+    volumes:
+      - ./mailer:/data
+    ports:
+      - 1025:1025
+      - 8025:8025
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+
 volumes:
   caddy_data:
   caddy_config:
