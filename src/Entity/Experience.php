@@ -22,13 +22,13 @@ class Experience
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $start_date = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $end_date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateInterval $duration = null;
 
     #[ORM\Column(length: 50)]
@@ -36,9 +36,6 @@ class Experience
 
     #[ORM\Column(length: 15)]
     private ?string $city = null;
-
-    #[ORM\Column]
-    private ?int $zipCode = null;
 
     #[ORM\ManyToOne(inversedBy: 'experiences')]
     private ?User $user = null;
@@ -77,7 +74,7 @@ class Experience
         return $this->end_date;
     }
 
-    public function setEndDate(\DateTimeInterface $end_date): static
+    public function setEndDate(?\DateTimeInterface $end_date): static
     {
         $this->end_date = $end_date;
 
@@ -101,7 +98,7 @@ class Experience
         return $this->duration;
     }
 
-    public function setDuration(\DateInterval $duration): static
+    public function setDuration(?\DateInterval $duration): static
     {
         $this->duration = $duration;
 
@@ -128,18 +125,6 @@ class Experience
     public function setCity(string $city): static
     {
         $this->city = $city;
-
-        return $this;
-    }
-
-    public function getZipCode(): ?int
-    {
-        return $this->zipCode;
-    }
-
-    public function setZipCode(int $zipCode): static
-    {
-        $this->zipCode = $zipCode;
 
         return $this;
     }

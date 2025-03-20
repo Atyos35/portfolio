@@ -42,25 +42,35 @@ class AppFixtures extends Fixture
         $manager->persist($user);
 
         $experiences = [
-            ["Développeur WEB", "Groupe Pandora", "2022-09-01", null, "Évolution et maintenance de l'application de gestion de matériel ainsi que sur le CRM interne."],
-            ["Concepteur Développeur Web", "Samsic Groupe", "2021-10-01", "2022-04-01", "Conception et développement d'une application Web d'export et d'import de données."],
-            ["Commercial", "Commercial Academy", "2020-10-01", "2021-03-01", "Prospection, Phoning, Gestion de la clientèle, Plan de tournée, Technique de négociation."],
-            ["Concepteur Développeur Web", "Néo-Soft Groupe", "2019-07-01", "2019-08-01", "Développement d'une application Web sur l'intranet de l'entreprise."],
-            ["Développeur Web", "NEO-SOFT, consultant pour OUEST-FRANCE", "2018-09-01", "2019-06-01", "Maintenance applicative et évolutive d'une application Web de gestion d'abonnements."],
-            ["Concepteur Développeur Web en alternance", "CER France", "2016-11-01", "2018-06-01", "Refonte d'application WEB de création de lettre de mission."],
-            ["Développeur Web", "L’univers NOZ", "2015-09-01", "2016-09-01", "Gestion des droits utilisateurs, création de formulaires, développement de l'administration."],
+            ["Développeur WEB", "Groupe Pandora", "Rennes", "2022-09-01", null, "Évolution et maintenance de l'application de gestion de matériel ainsi que sur le CRM interne."],
+            ["Concepteur Développeur Web", "Samsic Groupe", "Cesson-Sévigné", "2021-10-01", "2022-04-01", "Conception et développement d'une application Web d'export et d'import de données."],
+            ["Commercial", "Commercial Academy", "Cesson-Sévigné", "2020-10-01", "2021-03-01", "Prospection, Phoning, Gestion de la clientèle, Plan de tournée, Technique de négociation."],
+            ["Concepteur Développeur Web", "Néo-Soft Groupe", "Rennes", "2019-07-01", "2019-08-01", "Développement d'une application Web sur l'intranet de l'entreprise."],
+            ["Développeur Web", "NEO-SOFT, consultant pour OUEST-FRANCE", "Rennes", "2018-09-01", "2019-06-01", "Maintenance applicative et évolutive d'une application Web de gestion d'abonnements."],
+            ["Concepteur Développeur Web en alternance", "CER France", "Rennes", "2016-11-01", "2018-06-01", "Refonte d'application WEB de création de lettre de mission."],
+            ["Développeur Web", "L’univers NOZ", "Saint-Berthevin", "2015-09-01", "2016-09-01", "Gestion des droits utilisateurs, création de formulaires, développement de l'administration."],
         ];
 
-        foreach ($experiences as [$name, $company, $startDate, $endDate, $description]) {
+        foreach ($experiences as [$name, $company, $city, $startDate, $endDate, $description]) {
             $experience = new Experience();
             $experience->setName($name);
             $experience->setCompany($company);
+            $experience->setCity($city);
             $experience->setStartDate(new \DateTime($startDate));
             $experience->setEndDate($endDate ? new \DateTime($endDate) : null);
             $experience->setDescription($description);
             $experience->setUser($user);
+
+            if ($endDate) {
+                $start = new \DateTime($startDate);
+                $end = new \DateTime($endDate);
+                $experience->setDuration($start->diff($end));
+            } else {
+                $experience->setDuration(null);
+            }
+        
             $manager->persist($experience);
-        }
+        }        
 
         $trainings = [
             ['Concepteur Développeur en Projets Numériques', 'Titre de niveau II (BAC+4)', 'IMIE Bruz', '2016-09-01', '2018-07-01'],
