@@ -22,67 +22,23 @@ class Experience
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $start_date = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $end_date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    /**
-     * @var Collection<int, OperatingSystem>
-     */
-    #[ORM\ManyToMany(targetEntity: OperatingSystem::class, inversedBy: 'experiences')]
-    private Collection $operatingSystem;
-
-    /**
-     * @var Collection<int, Database>
-     */
-    #[ORM\ManyToMany(targetEntity: Database::class, inversedBy: 'experiences')]
-    private Collection $database;
-
-    /**
-     * @var Collection<int, Library>
-     */
-    #[ORM\ManyToMany(targetEntity: Library::class, inversedBy: 'experiences')]
-    private Collection $library;
-
-    /**
-     * @var Collection<int, Software>
-     */
-    #[ORM\ManyToMany(targetEntity: Software::class, inversedBy: 'experiences')]
-    private Collection $software;
-
-    /**
-     * @var Collection<int, Framework>
-     */
-    #[ORM\ManyToMany(targetEntity: Framework::class, inversedBy: 'experiences')]
-    private Collection $framework;
-
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateInterval $duration = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $company = null;
 
     #[ORM\Column(length: 15)]
     private ?string $city = null;
 
-    #[ORM\Column]
-    private ?int $zipCode = null;
-
     #[ORM\ManyToOne(inversedBy: 'experiences')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Company $company = null;
-
-    #[ORM\ManyToOne(inversedBy: 'Experiences')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $_user = null;
-
-    public function __construct()
-    {
-        $this->operatingSystem = new ArrayCollection();
-        $this->database = new ArrayCollection();
-        $this->library = new ArrayCollection();
-        $this->software = new ArrayCollection();
-        $this->framework = new ArrayCollection();
-    }
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -118,7 +74,7 @@ class Experience
         return $this->end_date;
     }
 
-    public function setEndDate(\DateTimeInterface $end_date): static
+    public function setEndDate(?\DateTimeInterface $end_date): static
     {
         $this->end_date = $end_date;
 
@@ -137,134 +93,26 @@ class Experience
         return $this;
     }
 
-    /**
-     * @return Collection<int, OperatingSystem>
-     */
-    public function getOperatingSystem(): Collection
-    {
-        return $this->operatingSystem;
-    }
-
-    public function addOperatingSystem(OperatingSystem $operatingSystem): static
-    {
-        if (!$this->operatingSystem->contains($operatingSystem)) {
-            $this->operatingSystem->add($operatingSystem);
-        }
-
-        return $this;
-    }
-
-    public function removeOperatingSystem(OperatingSystem $operatingSystem): static
-    {
-        $this->operatingSystem->removeElement($operatingSystem);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Database>
-     */
-    public function getDatabase(): Collection
-    {
-        return $this->database;
-    }
-
-    public function addDatabase(Database $database): static
-    {
-        if (!$this->database->contains($database)) {
-            $this->database->add($database);
-        }
-
-        return $this;
-    }
-
-    public function removeDatabase(Database $database): static
-    {
-        $this->database->removeElement($database);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Library>
-     */
-    public function getLibrary(): Collection
-    {
-        return $this->library;
-    }
-
-    public function addLibrary(Library $library): static
-    {
-        if (!$this->library->contains($library)) {
-            $this->library->add($library);
-        }
-
-        return $this;
-    }
-
-    public function removeLibrary(Library $library): static
-    {
-        $this->library->removeElement($library);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Software>
-     */
-    public function getSoftware(): Collection
-    {
-        return $this->software;
-    }
-
-    public function addSoftware(Software $software): static
-    {
-        if (!$this->software->contains($software)) {
-            $this->software->add($software);
-        }
-
-        return $this;
-    }
-
-    public function removeSoftware(Software $software): static
-    {
-        $this->software->removeElement($software);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Framework>
-     */
-    public function getFramework(): Collection
-    {
-        return $this->framework;
-    }
-
-    public function addFramework(Framework $framework): static
-    {
-        if (!$this->framework->contains($framework)) {
-            $this->framework->add($framework);
-        }
-
-        return $this;
-    }
-
-    public function removeFramework(Framework $framework): static
-    {
-        $this->framework->removeElement($framework);
-
-        return $this;
-    }
-
     public function getDuration(): ?\DateInterval
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateInterval $duration): static
+    public function setDuration(?\DateInterval $duration): static
     {
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getCompany(): ?string
+    {
+        return $this->company;
+    }
+
+    public function setCompany(string $company): static
+    {
+        $this->company = $company;
 
         return $this;
     }
@@ -281,38 +129,14 @@ class Experience
         return $this;
     }
 
-    public function getZipCode(): ?int
-    {
-        return $this->zipCode;
-    }
-
-    public function setZipCode(int $zipCode): static
-    {
-        $this->zipCode = $zipCode;
-
-        return $this;
-    }
-
-    public function getCompany(): ?Company
-    {
-        return $this->company;
-    }
-
-    public function setCompany(?Company $company): static
-    {
-        $this->company = $company;
-
-        return $this;
-    }
-
     public function getUser(): ?User
     {
-        return $this->_user;
+        return $this->user;
     }
 
-    public function setUser(?User $_user): static
+    public function setUser(?User $user): static
     {
-        $this->_user = $_user;
+        $this->user = $user;
 
         return $this;
     }

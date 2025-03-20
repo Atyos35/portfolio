@@ -20,10 +20,6 @@ class Training
     #[ORM\Column(length: 43)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'trainings')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?School $school = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $start_date = null;
 
@@ -31,8 +27,10 @@ class Training
     private ?\DateTimeInterface $end_date = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainings')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $_user = null;
+    private ?User $user = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $school = null;
 
     public function getId(): ?int
     {
@@ -63,18 +61,6 @@ class Training
         return $this;
     }
 
-    public function getSchool(): ?School
-    {
-        return $this->school;
-    }
-
-    public function setSchool(?School $school): static
-    {
-        $this->school = $school;
-
-        return $this;
-    }
-
     public function getStartDate(): ?\DateTimeInterface
     {
         return $this->start_date;
@@ -101,12 +87,24 @@ class Training
 
     public function getUser(): ?User
     {
-        return $this->_user;
+        return $this->user;
     }
 
-    public function setUser(?User $_user): static
+    public function setUser(?User $user): static
     {
-        $this->_user = $_user;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getSchool(): ?string
+    {
+        return $this->school;
+    }
+
+    public function setSchool(string $school): static
+    {
+        $this->school = $school;
 
         return $this;
     }

@@ -6,15 +6,32 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-class User
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\Column(length: 180)]
+    private ?string $email = null;
+
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column]
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
 
     #[ORM\Column(length: 8)]
     private ?string $firstname = null;
@@ -28,9 +45,6 @@ class User
     #[ORM\Column(length: 47)]
     private ?string $linkedin = null;
 
-    #[ORM\Column(length: 28)]
-    private ?string $email = null;
-
     #[ORM\Column(length: 6)]
     private ?string $age = null;
 
@@ -38,78 +52,106 @@ class User
     private ?string $city = null;
 
     #[ORM\Column]
-    private ?int $phone = null;
+    private ?string $phone = null;
 
     /**
      * @var Collection<int, Experience>
      */
-    #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: '_user', orphanRemoval: true)]
-    private Collection $Experiences;
+    #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: 'user')]
+    private Collection $experiences;
 
     /**
      * @var Collection<int, Training>
      */
-    #[ORM\OneToMany(targetEntity: Training::class, mappedBy: '_user', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Training::class, mappedBy: 'user')]
     private Collection $trainings;
 
     /**
-     * @var Collection<int, Framework>
+     * @var Collection<int, Block>
      */
-    #[ORM\OneToMany(targetEntity: Framework::class, mappedBy: '_user', orphanRemoval: true)]
-    private Collection $frameworks;
-
-    /**
-     * @var Collection<int, Software>
-     */
-    #[ORM\OneToMany(targetEntity: Software::class, mappedBy: '_user')]
-    private Collection $softwares;
-
-    /**
-     * @var Collection<int, Library>
-     */
-    #[ORM\OneToMany(targetEntity: Library::class, mappedBy: '_user', orphanRemoval: true)]
-    private Collection $libraries;
-
-    /**
-     * @var Collection<int, Database>
-     */
-    #[ORM\OneToMany(targetEntity: Database::class, mappedBy: '_user', orphanRemoval: true)]
-    private Collection $databases;
-
-    /**
-     * @var Collection<int, OperatingSystem>
-     */
-    #[ORM\OneToMany(targetEntity: OperatingSystem::class, mappedBy: '_user', orphanRemoval: true)]
-    private Collection $operatingSystems;
-
-    /**
-     * @var Collection<int, Language>
-     */
-    #[ORM\OneToMany(targetEntity: Language::class, mappedBy: '_user', orphanRemoval: true)]
-    private Collection $languages;
-
-    /**
-     * @var Collection<int, Hobby>
-     */
-    #[ORM\OneToMany(targetEntity: Hobby::class, mappedBy: '_user', orphanRemoval: true)]
-    private Collection $hobbies;
+    #[ORM\OneToMany(targetEntity: Block::class, mappedBy: 'user')]
+    private Collection $blocks;
 
     public function __construct()
     {
-        $this->Experiences = new ArrayCollection();
+        $this->experiences = new ArrayCollection();
         $this->trainings = new ArrayCollection();
-        $this->frameworks = new ArrayCollection();
-        $this->softwares = new ArrayCollection();
-        $this->libraries = new ArrayCollection();
-        $this->databases = new ArrayCollection();
-        $this->operatingSystems = new ArrayCollection();
-        $this->languages = new ArrayCollection();
-        $this->hobbies = new ArrayCollection();
+        $this->blocks = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     *
+     * @return list<string>
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getFirstname(): ?string
@@ -160,18 +202,6 @@ class User
         return $this;
     }
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
     public function getAge(): ?string
     {
         return $this->age;
@@ -196,12 +226,12 @@ class User
         return $this;
     }
 
-    public function getPhone(): ?int
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    public function setPhone(int $phone): static
+    public function setPhone(string $phone): static
     {
         $this->phone = $phone;
 
@@ -213,13 +243,13 @@ class User
      */
     public function getExperiences(): Collection
     {
-        return $this->Experiences;
+        return $this->experiences;
     }
 
     public function addExperience(Experience $experience): static
     {
-        if (!$this->Experiences->contains($experience)) {
-            $this->Experiences->add($experience);
+        if (!$this->experiences->contains($experience)) {
+            $this->experiences->add($experience);
             $experience->setUser($this);
         }
 
@@ -228,7 +258,7 @@ class User
 
     public function removeExperience(Experience $experience): static
     {
-        if ($this->Experiences->removeElement($experience)) {
+        if ($this->experiences->removeElement($experience)) {
             // set the owning side to null (unless already changed)
             if ($experience->getUser() === $this) {
                 $experience->setUser(null);
@@ -269,209 +299,29 @@ class User
     }
 
     /**
-     * @return Collection<int, Framework>
+     * @return Collection<int, Block>
      */
-    public function getFrameworks(): Collection
+    public function getBlocks(): Collection
     {
-        return $this->frameworks;
+        return $this->blocks;
     }
 
-    public function addFramework(Framework $framework): static
+    public function addBlock(Block $block): static
     {
-        if (!$this->frameworks->contains($framework)) {
-            $this->frameworks->add($framework);
-            $framework->setUser($this);
+        if (!$this->blocks->contains($block)) {
+            $this->blocks->add($block);
+            $block->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeFramework(Framework $framework): static
+    public function removeBlock(Block $block): static
     {
-        if ($this->frameworks->removeElement($framework)) {
+        if ($this->blocks->removeElement($block)) {
             // set the owning side to null (unless already changed)
-            if ($framework->getUser() === $this) {
-                $framework->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Software>
-     */
-    public function getSoftwares(): Collection
-    {
-        return $this->softwares;
-    }
-
-    public function addSoftware(Software $software): static
-    {
-        if (!$this->softwares->contains($software)) {
-            $this->softwares->add($software);
-            $software->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSoftware(Software $software): static
-    {
-        if ($this->softwares->removeElement($software)) {
-            // set the owning side to null (unless already changed)
-            if ($software->getUser() === $this) {
-                $software->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Library>
-     */
-    public function getLibraries(): Collection
-    {
-        return $this->libraries;
-    }
-
-    public function addLibrary(Library $library): static
-    {
-        if (!$this->libraries->contains($library)) {
-            $this->libraries->add($library);
-            $library->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLibrary(Library $library): static
-    {
-        if ($this->libraries->removeElement($library)) {
-            // set the owning side to null (unless already changed)
-            if ($library->getUser() === $this) {
-                $library->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Database>
-     */
-    public function getDatabases(): Collection
-    {
-        return $this->databases;
-    }
-
-    public function addDatabase(Database $database): static
-    {
-        if (!$this->databases->contains($database)) {
-            $this->databases->add($database);
-            $database->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDatabase(Database $database): static
-    {
-        if ($this->databases->removeElement($database)) {
-            // set the owning side to null (unless already changed)
-            if ($database->getUser() === $this) {
-                $database->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, OperatingSystem>
-     */
-    public function getOperatingSystems(): Collection
-    {
-        return $this->operatingSystems;
-    }
-
-    public function addOperatingSystem(OperatingSystem $operatingSystem): static
-    {
-        if (!$this->operatingSystems->contains($operatingSystem)) {
-            $this->operatingSystems->add($operatingSystem);
-            $operatingSystem->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOperatingSystem(OperatingSystem $operatingSystem): static
-    {
-        if ($this->operatingSystems->removeElement($operatingSystem)) {
-            // set the owning side to null (unless already changed)
-            if ($operatingSystem->getUser() === $this) {
-                $operatingSystem->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Language>
-     */
-    public function getLanguages(): Collection
-    {
-        return $this->languages;
-    }
-
-    public function addLanguage(Language $language): static
-    {
-        if (!$this->languages->contains($language)) {
-            $this->languages->add($language);
-            $language->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLanguage(Language $language): static
-    {
-        if ($this->languages->removeElement($language)) {
-            // set the owning side to null (unless already changed)
-            if ($language->getUser() === $this) {
-                $language->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Hobby>
-     */
-    public function getHobbies(): Collection
-    {
-        return $this->hobbies;
-    }
-
-    public function addHobby(Hobby $hobby): static
-    {
-        if (!$this->hobbies->contains($hobby)) {
-            $this->hobbies->add($hobby);
-            $hobby->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeHobby(Hobby $hobby): static
-    {
-        if ($this->hobbies->removeElement($hobby)) {
-            // set the owning side to null (unless already changed)
-            if ($hobby->getUser() === $this) {
-                $hobby->setUser(null);
+            if ($block->getUser() === $this) {
+                $block->setUser(null);
             }
         }
 
