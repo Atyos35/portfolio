@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateIntervalType;
 
 class ExperienceType extends AbstractType
 {
@@ -22,7 +23,6 @@ class ExperienceType extends AbstractType
                 'widget' => 'single_text',
             ])
             ->add('description')
-            ->add('duration')
             ->add('company')
             ->add('city')
             ->add('user', EntityType::class, [

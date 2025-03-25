@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Entity\User;
 
 final class BlockControllerTest extends WebTestCase
 {
@@ -14,6 +15,8 @@ final class BlockControllerTest extends WebTestCase
     private EntityManagerInterface $manager;
     private EntityRepository $blockRepository;
     private string $path = '/block/';
+    private User $user;
+    private User $otherUser;
 
     protected function setUp(): void
     {
@@ -21,9 +24,40 @@ final class BlockControllerTest extends WebTestCase
         $this->manager = BlockControllerTest::getContainer()->get('doctrine')->getManager();
         $this->blockRepository = $this->manager->getRepository(Block::class);
 
-        foreach ($this->blockRepository->findAll() as $object) {
-            $this->manager->remove($object);
+        $connection = $this->manager->getConnection();
+        $schemaManager = $connection->createSchemaManager();
+
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0;');
+
+        foreach ($schemaManager->listTableNames() as $tableName) {
+            $connection->executeStatement('TRUNCATE TABLE ' . $tableName);
         }
+
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=1;');
+
+        $this->user = new User();
+        $this->user->setEmail('test@example.com');
+        $this->user->setPassword(password_hash('password', PASSWORD_BCRYPT));
+        $this->user->setFirstname('John');
+        $this->user->setLastname('Doe');
+        $this->user->setJob('Développeur');
+        $this->user->setLinkedin('https://linkedin.com/in/johndoe');
+        $this->user->setAge('30');
+        $this->user->setCity('Paris');
+        $this->user->setPhone('0606060606');
+        $this->manager->persist($this->user);
+
+        $this->otherUser = new User();
+        $this->otherUser->setEmail('other@example.com');
+        $this->otherUser->setPassword(password_hash('password', PASSWORD_BCRYPT));
+        $this->otherUser->setFirstname('Jane');
+        $this->otherUser->setLastname('Doe');
+        $this->otherUser->setJob('Designer');
+        $this->otherUser->setLinkedin('https://linkedin.com/in/janedoe');
+        $this->otherUser->setAge('28');
+        $this->otherUser->setCity('Lyon');
+        $this->otherUser->setPhone('0707070707');
+        $this->manager->persist($this->otherUser);
 
         $this->manager->flush();
     }
@@ -35,9 +69,6 @@ final class BlockControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Block index');
-
-        // Use the $crawler to perform additional assertions e.g.
-        // self::assertSame('Some text on the page', $crawler->filter('.p')->first());
     }
 
     public function testNew(): void
@@ -48,9 +79,9 @@ final class BlockControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(200);
 
         $this->client->submitForm('Save', [
-            'block[title]' => 'Testing',
-            'block[names]' => 'Testing',
-            'block[user]' => 'Testing',
+            'block[title]' => 'Languages',
+            'block[names]' => ['PHP', 'TypeScript'],
+            'block[user]' => $this->user->getId(),
         ]);
 
         self::assertResponseRedirects($this->path);
@@ -62,9 +93,9 @@ final class BlockControllerTest extends WebTestCase
     {
         $this->markTestIncomplete();
         $fixture = new Block();
-        $fixture->setTitle('My Title');
-        $fixture->setNames('My Title');
-        $fixture->setUser('My Title');
+        $fixture->setTitle('Languages');
+        $fixture->setNames(['PHP', 'TypeScript']);
+        $fixture->setUser($this->user->getId());
 
         $this->manager->persist($fixture);
         $this->manager->flush();
@@ -73,45 +104,45 @@ final class BlockControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Block');
-
-        // Use assertions to check that the properties are properly displayed.
     }
 
     public function testEdit(): void
     {
         $this->markTestIncomplete();
         $fixture = new Block();
-        $fixture->setTitle('Value');
-        $fixture->setNames('Value');
-        $fixture->setUser('Value');
+        $fixture->setTitle('Languages');
+        $fixture->setNames(['PHP', 'TypeScript']);
+        $fixture->setUser($this->user);
 
         $this->manager->persist($fixture);
         $this->manager->flush();
 
+        $this->client->loginUser($this->otherUser);
+
         $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
 
         $this->client->submitForm('Update', [
-            'block[title]' => 'Something New',
-            'block[names]' => 'Something New',
-            'block[user]' => 'Something New',
+            'block[title]' => 'Software',
+            'block[names]' => ['PHPStorm', 'WebStorm'],
+            'block[user]' => $this->otherUser->getId(),
         ]);
 
-        self::assertResponseRedirects('/block/');
+        self::assertResponseStatusCodeSame(403);
 
-        $fixture = $this->blockRepository->findAll();
+        $fixture = $this->blockRepository->find($fixture->getId());
 
-        self::assertSame('Something New', $fixture[0]->getTitle());
-        self::assertSame('Something New', $fixture[0]->getNames());
-        self::assertSame('Something New', $fixture[0]->getUser());
+        self::assertSame('Languages', $fixture->getTitle());
+        self::assertSame(['PHP', 'TypeScript'], $fixture->getNames());
     }
+
 
     public function testRemove(): void
     {
         $this->markTestIncomplete();
         $fixture = new Block();
-        $fixture->setTitle('Value');
-        $fixture->setNames('Value');
-        $fixture->setUser('Value');
+        $fixture->setTitle('Languages');
+        $fixture->setNames(['PHPStorm', 'WebStorm']);
+        $fixture->setUser($this->user->getId());
 
         $this->manager->persist($fixture);
         $this->manager->flush();
