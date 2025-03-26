@@ -2,14 +2,14 @@ services:
   php:
     image: ${IMAGES_PREFIX:-}app-php
     restart: unless-stopped
-    depends_on:
-      - database
+    networks:
+      - database_network
     environment:
       SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
       MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
       MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
       # Run "composer require symfony/orm-pack" to install and configure Doctrine ORM
-      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@database:3306/${MYSQL_DATABASE}?serverVersion=${MYSQL_VERSION}&charset=utf8
+      DATABASE_URL: ${DATABASE_URL}
       # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
       MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
       MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}/.well-known/mercure}
@@ -36,6 +36,8 @@ services:
 
   database:
     image: mysql:${MYSQL_VERSION}
+    networks:
+      - database_network
     ports: 
       - "3306:3306"
     environment:
@@ -70,3 +72,7 @@ volumes:
   caddy_data:
   caddy_config:
   database_data:
+
+networks:
+  database_network:
+    driver: bridge
