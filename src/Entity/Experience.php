@@ -76,11 +76,13 @@ class Experience
         return $this->end_date;
     }
 
-    public function setEndDate(\DateTime $endDate): self
+    public function setEndDate(?\DateTime $endDate): self
     {
         $this->end_date = $endDate;
-        if ($this->start_date) {
+        if ($this->start_date && $this->end_date) {
             $this->duration = $this->start_date->diff($this->end_date);
+        } else {
+            $this->duration = null;
         }
         return $this;
     }
