@@ -62,10 +62,12 @@ class Experience
         return $this->start_date;
     }
 
-    public function setStartDate(\DateTimeInterface $start_date): static
+    public function setStartDate(\DateTime $startDate): self
     {
-        $this->start_date = $start_date;
-
+        $this->start_date = $startDate;
+        if ($this->end_date) {
+            $this->duration = $this->start_date->diff($this->end_date);
+        }
         return $this;
     }
 
@@ -74,10 +76,12 @@ class Experience
         return $this->end_date;
     }
 
-    public function setEndDate(?\DateTimeInterface $end_date): static
+    public function setEndDate(\DateTime $endDate): self
     {
-        $this->end_date = $end_date;
-
+        $this->end_date = $endDate;
+        if ($this->start_date) {
+            $this->duration = $this->start_date->diff($this->end_date);
+        }
         return $this;
     }
 
