@@ -23,40 +23,44 @@ class RegistrationController extends AbstractController
     {
     }
 
-    #[Route('/register', name: 'app_register')]
+    #[Route('/register', name: 'app_register', methods: ['POST', 'GET'])]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
+        $data = json_decode($request->getContent(), true);
+        $form->submit($data);
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+        if (!$form->isValid()) {
+            $errors = [];
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            foreach ($form->getErrors(true) as $error) {
+                $errors[$error->getOrigin()->getName()] = $error->getMessage();
+            }
 
-            // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                (new TemplatedEmail())
-                    ->from(new Address('valerian.guemene@gmail.com', 'CV Maker'))
-                    ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
-            );
-
-            // do anything else you need here, like send an email
-
-            return $security->login($user, 'form_login', 'main');
+            return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
-        ]);
+        $plainPassword = $form->get('plainPassword')->getData();
+
+        $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            (new TemplatedEmail())
+                ->from(new Address('valerian.guemene@gmail.com', 'CV Maker'))
+                ->to((string) $user->getEmail())
+                ->subject('Please Confirm your Email')
+                ->htmlTemplate('registration/confirmation_email.html.twig')
+        );
+
+        return $this->json([
+            'message' => 'Inscription réussie',
+            'user' => ['id' => $user->getId(), 'email' => $user->getEmail()]
+        ], Response::HTTP_CREATED);
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
