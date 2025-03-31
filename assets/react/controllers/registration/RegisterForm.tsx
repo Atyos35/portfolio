@@ -1,9 +1,8 @@
-import React from "react";
 import { useRegisterForm } from "./useRegisterForm";
 
 export default function RegisterForm({ action }: { action: string }) {
     const { register, handleSubmit, errors, onSubmit } = useRegisterForm(action);
-
+    
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div>

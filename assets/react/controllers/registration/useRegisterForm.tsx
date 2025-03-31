@@ -9,7 +9,7 @@ const schema = z.object({
     lastname: z.string(),
     job: z.string(),
     linkedin: z.string(),
-    age: z.number().min(6, "L'âge doit être en années"),
+    age: z.coerce.number(),
     city: z.string(),
     phone: z.string().min(10, "Le numéro de téléphone n'est pas valide"),
     plainPassword: z.string().min(6, "Mot de passe trop court"),
@@ -18,11 +18,10 @@ const schema = z.object({
 export function useRegisterForm(action: string) {
     const [csrfToken, setCsrfToken] = useState<string | null>(null);
 
-    // Récupération du token CSRF au montage du composant
     useEffect(() => {
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch("/api/csrf-token");
+                const response = await fetch("/csrf-token");
                 if (!response.ok) throw new Error("Erreur lors de la récupération du token CSRF");
 
                 const data = await response.json();
@@ -50,7 +49,7 @@ export function useRegisterForm(action: string) {
         }
 
         try {
-            const response = await fetch(action, {
+            const response = await fetch('/register', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...data, _csrf_token: csrfToken }),

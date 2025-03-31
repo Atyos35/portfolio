@@ -23,15 +23,19 @@ class RegistrationController extends AbstractController
     {
     }
 
-    #[Route('/register', name: 'app_register', methods: ['POST', 'GET'])]
+    #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
     {
+        if ($request->isMethod('GET')) {
+            return $this->render('registration/register.html.twig');
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
 
         $data = json_decode($request->getContent(), true);
         $form->submit($data);
-
+        
         if (!$form->isValid()) {
             $errors = [];
 
@@ -43,19 +47,10 @@ class RegistrationController extends AbstractController
         }
 
         $plainPassword = $form->get('plainPassword')->getData();
-
         $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
         $entityManager->persist($user);
         $entityManager->flush();
-
-        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-            (new TemplatedEmail())
-                ->from(new Address('valerian.guemene@gmail.com', 'CV Maker'))
-                ->to((string) $user->getEmail())
-                ->subject('Please Confirm your Email')
-                ->htmlTemplate('registration/confirmation_email.html.twig')
-        );
 
         return $this->json([
             'message' => 'Inscription réussie',
