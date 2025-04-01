@@ -15,16 +15,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
+    public function __construct(private readonly EmailVerifier $emailVerifier)
     {
     }
 
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         if ($request->isMethod('GET')) {
             return $this->render('registration/register.html.twig');
@@ -34,24 +40,35 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
 
         $data = json_decode($request->getContent(), true);
-        $form->submit($data);
-        
-        if (!$form->isValid()) {
-            $errors = [];
 
-            foreach ($form->getErrors(true) as $error) {
-                $errors[$error->getOrigin()->getName()] = $error->getMessage();
+        if($csrfTokenManager->isTokenValid(new CsrfToken('registration_form', $data['_csrf_token']))){
+            $form->submit($data);
+
+            if (!$form->isValid()) {
+                $errors = [];
+
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[$error->getOrigin()->getName()] = $error->getMessage();
+                }
+
+                return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
             }
 
-            return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
+            $plainPassword = $form->get('plainPassword')->getData();
+            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+                (new TemplatedEmail())
+                    ->from(new Address('valerian.guemene@gmail.com', 'CV Maker'))
+                    ->to((string) $user->getEmail())
+                    ->subject('Please Confirm your Email')
+                    ->htmlTemplate('registration/confirmation_email.html.twig')
+            );
+
         }
-
-        $plainPassword = $form->get('plainPassword')->getData();
-        $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-
-        $entityManager->persist($user);
-        $entityManager->flush();
-
         return $this->json([
             'message' => 'Inscription réussie',
             'user' => ['id' => $user->getId(), 'email' => $user->getEmail()]
@@ -68,7 +85,7 @@ class RegistrationController extends AbstractController
         }
 
         $user = $userRepository->find($id);
-        
+
         if (null === $user) {
             return $this->redirectToRoute('app_register');
         }
@@ -81,7 +98,7 @@ class RegistrationController extends AbstractController
 
             return $this->redirectToRoute('app_register');
         }
-        
+
         $this->addFlash('success', 'Your email address has been verified.');
 
         return $this->redirectToRoute('app_login');
