@@ -3,3 +3,9 @@
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+/commandlinetools/schemas/frameworkDescriptionVersion1.1.4.xsd
+/git_toolbox_prj.xml
+/php.xml
+/php-test-framework.xml
+/phpunit.xml
+/commandlinetools/Symfony_02_04_2025_15_27.xml
