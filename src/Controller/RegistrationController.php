@@ -77,7 +77,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/confirmed-registration', name: 'app_confirmed_registration')]
-    public function confirmedRegistration(Request $request): Response
+    public function confirmedRegistration(): Response
     {
         return $this->render('registration/confirmed_registration.html.twig');
     }
