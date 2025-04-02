@@ -5,20 +5,12 @@ import * as z from "zod";
 import * as Turbo from "@hotwired/turbo";
 
 const schema = z.object({
-    email: z.string().email("Invalid email"),
-    firstname: z.string(),
-    lastname: z.string(),
-    job: z.string(),
-    linkedin: z.string(),
-    age: z.coerce.number(),
-    city: z.string(),
-    phone: z.string().min(10, "Le numéro de téléphone n'est pas valide"),
-    plainPassword: z.string()
-        .min(9, "Le mot de passe doit contenir au moins 9 caractères")
-        .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre"),
-});
+    last_username: z.string().email(),
+    username: z.string().email("Invalid email"),
+    password: z.string().email("Invalid email"),
+})
 
-export function useRegisterForm(action: string) {
+export function useLoginForm(action: string) {
     const [csrfToken, setCsrfToken] = useState<string | null>(null);
 
     useEffect(() => {
@@ -27,7 +19,7 @@ export function useRegisterForm(action: string) {
                 const response = await fetch("/csrf-token", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ tokenId: "registration_form" }),
+                    body: JSON.stringify({ tokenId: "authenticate" }),
                 });
 
                 if (!response.ok) throw new Error("Erreur lors de la récupération du token CSRF");
