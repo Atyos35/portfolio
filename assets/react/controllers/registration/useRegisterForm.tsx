@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import * as Turbo from "@hotwired/turbo";
 
 const schema = z.object({
     email: z.string().email("Email invalide"),
@@ -12,7 +13,9 @@ const schema = z.object({
     age: z.coerce.number(),
     city: z.string(),
     phone: z.string().min(10, "Le numéro de téléphone n'est pas valide"),
-    plainPassword: z.string().min(6, "Mot de passe trop court"),
+    plainPassword: z.string()
+        .min(9, "Le mot de passe doit contenir au moins 9 caractères")
+        .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre"),
 });
 
 type RegisterFormValues = z.infer<typeof schema>;
@@ -65,8 +68,7 @@ export function useRegisterForm(action: string) {
             if (!response.ok) {
                 throw new Error("Erreur d'inscription");
             }
-
-            alert("Inscription réussie !");
+            Turbo.visit('/confirmed-registration')
         } catch (error) {
             console.error(error);
         }

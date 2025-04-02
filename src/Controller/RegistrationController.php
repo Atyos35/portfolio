@@ -9,7 +9,6 @@ use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
@@ -56,6 +55,7 @@ class RegistrationController extends AbstractController
 
             $plainPassword = $form->get('plainPassword')->getData();
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $user->setRoles(["ROLE_USER"]);
 
             $entityManager->persist($user);
             $entityManager->flush();
@@ -69,10 +69,17 @@ class RegistrationController extends AbstractController
             );
 
         }
+        $this->addFlash('email', $user->getEmail());
         return $this->json([
             'message' => 'Inscription réussie',
             'user' => ['id' => $user->getId(), 'email' => $user->getEmail()]
         ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/confirmed-registration', name: 'app_confirmed_registration')]
+    public function confirmedRegistration(Request $request): Response
+    {
+        return $this->render('registration/confirmed_registration.html.twig');
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
@@ -90,7 +97,6 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_register');
         }
 
-        // validate email confirmation link, sets User::isVerified=true and persists
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {
