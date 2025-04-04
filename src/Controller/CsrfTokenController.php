@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/csrf-token')]
 final class CsrfTokenController extends AbstractController
 {
-    #[Route(name: 'app_get_csrf_token', methods: ['POST'])]
+    #[Route(name: 'app_get_csrf_token')]
     public function getCsrfToken(
         Request $request,
         CsrfTokenService $csrfTokenService): JsonResponse

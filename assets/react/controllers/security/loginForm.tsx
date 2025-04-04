@@ -1,7 +1,11 @@
-import {useLoginForm} from "./useLoginForm"
+import { useLoginForm } from "./useLoginForm";
 
+interface LoginFormProps {
+    action: string;
+    csrfToken: string;
+}
 
-export default function LoginForm({ action }: { action: string }) {
+export default function LoginForm({ action, csrfToken }: LoginFormProps) {
     const { register, handleSubmit, errors, onSubmit } = useLoginForm(action);
 
     return (
@@ -9,20 +13,18 @@ export default function LoginForm({ action }: { action: string }) {
             <div>
                 <label>Email</label>
                 <input type="email" {...register("username")} />
-                {errors.username && <p>{errors.username.message}</p>}
+                {/*{errors.username && <p>{errors.username}</p>}*/}
             </div>
 
             <div>
                 <label>Mot de passe</label>
                 <input type="password" {...register("password")} />
-                {errors.password && <p>{errors.password.message}</p>}
+                {/*{errors.password && <p>{errors.password}</p>}*/}
             </div>
 
-            <input type="hidden" name="_csrf_token"
-                   value="{{ csrf_token('authenticate') }}"
-            />
+            <input type="hidden" name="_csrf_token" value={csrfToken} />
 
-            <button type="submit">S'inscrire</button>
+            <button type="submit">Se connecter</button>
         </form>
     );
 }

@@ -1,14 +1,7 @@
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import {useEffect, useState} from "react";
 import * as Turbo from "@hotwired/turbo";
-
-const schema = z.object({
-    last_username: z.string().email(),
-    username: z.string().email("Invalid email"),
-    password: z.string().email("Invalid email"),
-})
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 export function useLoginForm(action: string) {
     const [csrfToken, setCsrfToken] = useState<string | null>(null);
@@ -19,7 +12,7 @@ export function useLoginForm(action: string) {
                 const response = await fetch("/csrf-token", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ tokenId: "authenticate" }),
+                    body: JSON.stringify({ tokenId: "registration_form" }),
                 });
 
                 if (!response.ok) throw new Error("Erreur lors de la récupération du token CSRF");
@@ -38,9 +31,7 @@ export function useLoginForm(action: string) {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm({
-        resolver: zodResolver(schema),
-    });
+    } = useForm({});
 
     const onSubmit = async (data: any) => {
         if (!csrfToken) {

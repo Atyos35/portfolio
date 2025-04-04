@@ -1,12 +1,16 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "sourceMap": true,
+    "target": "ESNext",
     "moduleResolution": "node",
-    "lib": ["dom", "es2015", "es2016"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "jsx": "react-jsx",
-    "target": "es6",
-    "allowSyntheticDefaultImports": true
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
   "include": ["assets/**/*"]
 }
