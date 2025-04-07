@@ -20,8 +20,6 @@ export default function LoginForm({ action, csrfToken }: LoginFormProps) {
                 <input type="password" {...register("password")} />
             </div>
 
-            <input type="hidden" name="_csrf_token" value={csrfToken} />
-
             <button type="submit">Se connecter</button>
         </form>
     );

@@ -2,32 +2,24 @@
 
 namespace App\Controller;
 
-use App\Service\CsrfTokenService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
     #[Route('/login', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(
         Request $request,
-        CsrfTokenService $csrfTokenService,
         Security $security
     ): Response {
-        if ($security->getUser()) {
+        if ($security->getUser() && $security->getUser()->isVerified()) {
             return $this->redirectToRoute('app_home');
         }
-
         if ($request->isMethod('GET')) {
-            $csrfToken = $csrfTokenService->getToken('authenticate');
-            return $this->render('security/login.html.twig', [
-                'csrf_token' => $csrfToken,
-            ]);
+            return $this->render('security/login.html.twig');
         }
         return new Response('Erreur lors de la connexion', Response::HTTP_BAD_REQUEST);
     }

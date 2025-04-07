@@ -110,7 +110,7 @@ class RegistrationFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'allow_extra_fields' => true,
-            'csrf_protection' => false,
+            'csrf_protection' => true,
         ]);
     }
 }

@@ -52,8 +52,7 @@ class LoginAuthenticator extends AbstractAuthenticator
 
         return new Passport(
             new UserBadge($username),
-            new PasswordCredentials($password),
-            [new CsrfTokenBadge('login', $csrfToken)]
+            new PasswordCredentials($password)
         );
     }
 
