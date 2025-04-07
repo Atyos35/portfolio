@@ -1,37 +1,12 @@
-import {useEffect, useState} from "react";
 import * as Turbo from "@hotwired/turbo";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-export function useLoginForm(action: string) {
-    const [csrfToken, setCsrfToken] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchCsrfToken = async () => {
-            try {
-                const response = await fetch("/csrf-token", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ tokenId: "registration_form" }),
-                });
-
-                if (!response.ok) throw new Error("Erreur lors de la récupération du token CSRF");
-
-                const data = await response.json();
-                setCsrfToken(data.csrf_token);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchCsrfToken();
-    }, []);
-
+export function useLoginForm(action: string, csrfToken: string) {
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm({});
+    } = useForm();
 
     const onSubmit = async (data: any) => {
         if (!csrfToken) {
@@ -46,12 +21,16 @@ export function useLoginForm(action: string) {
                 body: JSON.stringify({ ...data, _csrf_token: csrfToken }),
             });
 
+            const json = await response.json();
+
             if (!response.ok) {
-                throw new Error("Erreur d'inscription");
+                console.error("Erreur côté serveur :", json);
+                return;
             }
-            Turbo.visit('/confirmed-registration')
+
+            Turbo.visit("/");
         } catch (error) {
-            console.error(error);
+            console.error("Erreur de soumission :", error);
         }
     };
 

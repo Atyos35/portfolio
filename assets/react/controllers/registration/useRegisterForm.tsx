@@ -18,29 +18,7 @@ const schema = z.object({
         .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre"),
 });
 
-export function useRegisterForm(action: string) {
-    const [csrfToken, setCsrfToken] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchCsrfToken = async () => {
-            try {
-                const response = await fetch("/csrf-token", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ tokenId: "registration_form" }),
-                });
-
-                if (!response.ok) throw new Error("Erreur lors de la récupération du token CSRF");
-
-                const data = await response.json();
-                setCsrfToken(data.csrf_token);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchCsrfToken();
-    }, []);
+export function useRegisterForm(action: string, csrfToken: string) {
 
     const {
         register,

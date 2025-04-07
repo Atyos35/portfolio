@@ -18,11 +18,6 @@ security:
             provider: app_user_provider
             custom_authenticators:
                 - App\Security\LoginAuthenticator
-#            form_login:
-#                login_path: app_login
-#                check_path: app_login
-#                enable_csrf: true
-#                default_target_path: app_home
             logout:
                 path: app_logout
                 # where to redirect after logout
@@ -39,9 +34,12 @@ security:
     access_control:
          - { path: ^/login, roles: PUBLIC_ACCESS }
          - { path: ^/register, roles: PUBLIC_ACCESS }
-         - { path: ^/csrf-token, roles: PUBLIC_ACCESS }
+         - { path: ^/confirmed-registration, roles: PUBLIC_ACCESS }
+         - { path: ^/block, roles: PUBLIC_ACCESS }
+         - { path: ^/experience, roles: PUBLIC_ACCESS }
+         - { path: ^/training, roles: PUBLIC_ACCESS }
+         - { path: ^/verify/email, roles: PUBLIC_ACCESS }
          - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
-         - { path: ^/confirmed-registration, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

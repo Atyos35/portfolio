@@ -4,5 +4,5 @@
 
 {% block body %}
 <div {{ react_component('security/loginForm', {
-        action: path('app_login')}) }}></div>
+        action: path('app_login'), csrfToken: csrf_token('login') }) }}></div>
 {% endblock %}

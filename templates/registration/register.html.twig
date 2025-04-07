@@ -3,5 +3,6 @@
 {% block title %}Register{% endblock %}
 
 {% block body %}
-    <div {{ react_component('registration/registerForm', { action: path('app_register') }) }}></div>
+    <div {{ react_component('registration/registerForm',
+        { action: path('app_register'), csrfToken: csrf_token('register') }) }}></div>
 {% endblock %}

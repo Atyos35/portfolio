@@ -40,7 +40,7 @@ class RegistrationController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        if($csrfTokenManager->isTokenValid(new CsrfToken('registration_form', $data['_csrf_token']))){
+        if($csrfTokenManager->isTokenValid(new CsrfToken('register', $data['_csrf_token']))){
             $form->submit($data);
 
             if (!$form->isValid()) {
