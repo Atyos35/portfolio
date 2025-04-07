@@ -1,7 +1,11 @@
 import { useRegisterForm } from "./useRegisterForm";
 
-export default function RegisterForm({ action }: { action: string }) {
-    const { register, handleSubmit, errors, onSubmit } = useRegisterForm(action);
+interface RegisterFormProps {
+    action: string;
+    csrfToken: string;
+}
+export default function RegisterForm({ action, csrfToken }: RegisterFormProps) {
+    const { register, handleSubmit, errors, onSubmit } = useRegisterForm(action, csrfToken);
     
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

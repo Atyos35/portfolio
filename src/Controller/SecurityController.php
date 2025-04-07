@@ -3,25 +3,25 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
-    {
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        return $this->render('security/login.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
-        ]);
+    #[Route('/login', name: 'app_login', methods: ['GET', 'POST'])]
+    public function login(
+        Request $request,
+        Security $security
+    ): Response {
+        if ($security->getUser() && $security->getUser()->isVerified()) {
+            return $this->redirectToRoute('app_home');
+        }
+        if ($request->isMethod('GET')) {
+            return $this->render('security/login.html.twig');
+        }
+        return new Response('Erreur lors de la connexion', Response::HTTP_BAD_REQUEST);
     }
 
     #[Route(path: '/logout', name: 'app_logout')]
