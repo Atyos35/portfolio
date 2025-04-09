@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,10 +11,10 @@ const schema = z.object({
     linkedin: z.string(),
     age: z.coerce.number(),
     city: z.string(),
-    phone: z.string().min(10, "Le numéro de téléphone n'est pas valide"),
+    phone: z.string().min(10, "The phone number is invalid"),
     plainPassword: z.string()
-        .min(9, "Le mot de passe doit contenir au moins 9 caractères")
-        .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre"),
+        .min(9, "Password must contain at least 9 characters")
+        .regex(/\d/, "Password must contain at least one number"),
 });
 
 export function useRegisterForm(action: string, csrfToken: string) {
