@@ -40,6 +40,7 @@ security:
          - { path: ^/training, roles: PUBLIC_ACCESS }
          - { path: ^/verify/email, roles: PUBLIC_ACCESS }
          - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+         - { path: ^/user, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

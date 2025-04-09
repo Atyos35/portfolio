@@ -9,6 +9,7 @@ type FormProps = {
         age: string;
         city: string;
         phone: string;
+        csrfToken: string;
     };
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmit: (e: React.FormEvent) => void;
@@ -16,7 +17,7 @@ type FormProps = {
     message: string;
 };
 
-export default function UserForm({form, onChange, onSubmit, saving, message,}: FormProps) {
+export default function UserForm({form, onChange, onSubmit, saving, message}: FormProps) {
     return (
         <form onSubmit={onSubmit}>
             <h2>Personal informations</h2>

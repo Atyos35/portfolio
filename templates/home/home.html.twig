@@ -4,5 +4,5 @@
 
 {% block body %}
     <div {{ react_component('user/userGet',
-        { action: path('app_user_get') }) }}></div>
+        { action: path('app_user_get'), csrfToken: csrf_token('edit_user') }) }}></div>
 {% endblock %}

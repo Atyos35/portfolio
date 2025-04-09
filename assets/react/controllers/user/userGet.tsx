@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import Modal from '../modal/modal';
+import { useUserForm } from './useUserForm';
+import useOpenModal from '../modal/useOpenModal';
 
 type Props = {
     action: string;
@@ -15,8 +18,22 @@ type User = {
     phone: string;
 };
 
+const emptyUser: User = {
+    firstname: '',
+    lastname: '',
+    email: '',
+    job: '',
+    linkedin: '',
+    age: '',
+    city: '',
+    phone: ''
+};
+
 export default function UserGet({ action }: Props) {
     const [user, setUser] = useState<User | null>(null);
+    const { isOpen, open, close } = useOpenModal();
+
+    const userForm = useUserForm(user || emptyUser, action);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -43,7 +60,7 @@ export default function UserGet({ action }: Props) {
     if (!user) return <div>Chargement...</div>;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" onClick={open}>
             <div className="pt-4 w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
                 <div className="pt-4 flex flex-col items-center pb-10">
                     <img
@@ -59,8 +76,7 @@ export default function UserGet({ action }: Props) {
                 </div>
             </div>
 
-            <div
-                className="pt-4 pb-6 w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <div className="pt-4 pb-6 w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
                 <h5 className="text-xl font-medium text-gray-900 dark:text-white text-center">
                     {user.firstname} {user.lastname}
                 </h5>
@@ -80,6 +96,11 @@ export default function UserGet({ action }: Props) {
                 </div>
             </div>
 
+            {isOpen && (
+                <Modal isOpen={isOpen} onClose={close}>
+                    {userForm}
+                </Modal>
+            )}
         </div>
     );
 }

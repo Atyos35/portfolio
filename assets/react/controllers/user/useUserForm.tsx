@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import UserForm from "./userForm";
 
 const schema = z.object({
@@ -12,6 +12,8 @@ const schema = z.object({
     phone: z.string().min(10, "The phone number is invalid"),
 });
 
+type UserFormData = z.infer<typeof schema>;
+
 type userFormProps = {
     firstname: string;
     lastname: string;
@@ -22,34 +24,42 @@ type userFormProps = {
     phone: string;
 };
 
-export function useUserForm(props: userFormProps, action: string) {
-    const [form, setForm] = useState({
-        firstname: props.firstname || '',
-        lastname: props.lastname || '',
-        job: props.job || '',
-        linkedin: props.linkedin || '',
-        age: props.age || 0,
-        city: props.city || '',
-        phone: props.phone || '',
-    });
+export function useUserForm(props: userFormProps, csrfToken: string) {
+    const [form, setFormData] = useState<userFormProps>({ ...props });
 
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        setFormData(props);
+    }, [props]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
         setMessage('');
+        setFormErrors({});
+
+        if (!csrfToken) {
+            console.error("Token CSRF non disponible");
+            return;
+        }
 
         try {
-            const response = await fetch(action, {
+            const payload = schema.parse(form);
+            const response = await fetch('/user/2/edit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(form),
+                body: JSON.stringify(payload),
             });
 
             const data = await response.json();
