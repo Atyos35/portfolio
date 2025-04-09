@@ -30,30 +30,12 @@ final class UserController extends AbstractController
             'user' => $user->getId(),
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
-            'job' => $user->getLastname(),
-            'linkedin' => $user->getLastname(),
-            'age' => $user->getLastname(),
-            'city' => $user->getLastname(),
-            'phone' => $user->getLastname(),
+            'email' => $user->getEmail(),
+            'job' => $user->getJob(),
+            'linkedin' => $user->getLinkedin(),
+            'age' => $user->getAge(),
+            'city' => $user->getCity(),
+            'phone' => $user->getPhone(),
         ]);
-    }
-
-
-    #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->json([
-            'message' => 'Inscription réussie',
-            'user' => ['id' => $user->getId(), 'email' => $user->getEmail()]
-        ], Response::HTTP_CREATED);
     }
 }

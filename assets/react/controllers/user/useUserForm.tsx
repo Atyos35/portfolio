@@ -7,7 +7,7 @@ const schema = z.object({
     lastname: z.string(),
     job: z.string(),
     linkedin: z.string(),
-    age: z.coerce.number(),
+    age: z.string(),
     city: z.string(),
     phone: z.string().min(10, "The phone number is invalid"),
 });
@@ -17,7 +17,7 @@ type userFormProps = {
     lastname: string;
     job: string;
     linkedin: string;
-    age: number;
+    age: string;
     city: string;
     phone: string;
 };

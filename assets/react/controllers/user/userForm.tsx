@@ -6,7 +6,7 @@ type FormProps = {
         lastname: string;
         job: string;
         linkedin: string;
-        age: number;
+        age: string;
         city: string;
         phone: string;
     };
