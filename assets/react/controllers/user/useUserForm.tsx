@@ -1,75 +1,60 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
-import UserForm from "./userForm";
+import * as Turbo from "@hotwired/turbo";
 
 const schema = z.object({
-    firstname: z.string(),
-    lastname: z.string(),
-    job: z.string(),
-    linkedin: z.string(),
-    age: z.string(),
-    city: z.string(),
-    phone: z.string().min(10, "The phone number is invalid"),
+    firstname: z.string().optional(),
+    lastname: z.string().optional(),
+    job: z.string().optional(),
+    linkedin: z.string().optional(),
+    age: z.string().optional(),
+    city: z.string().optional(),
+    phone: z.string().min(10, "Le numéro de téléphone est invalide").optional(),
 });
 
-type userFormProps = {
-    firstname: string;
-    lastname: string;
-    job: string;
-    linkedin: string;
-    age: string;
-    city: string;
-    phone: string;
-};
+export type UserFormInput = z.infer<typeof schema>;
 
-export function useUserForm(props: userFormProps, action: string) {
-    const [form, setForm] = useState({
-        firstname: props.firstname || '',
-        lastname: props.lastname || '',
-        job: props.job || '',
-        linkedin: props.linkedin || '',
-        age: props.age || 0,
-        city: props.city || '',
-        phone: props.phone || '',
+export function useUserForm(action: string, csrfToken: string) {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset,
+    } = useForm({
+        resolver: zodResolver(schema),
     });
 
-    const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState('');
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSaving(true);
-        setMessage('');
+    const onSubmit = async (data: UserFormInput) => {
+        if (!csrfToken) {
+            console.error("Token CSRF non disponible");
+            return;
+        }
 
         try {
             const response = await fetch(action, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(form),
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...data, _csrf_token: csrfToken }),
             });
 
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || 'Erreur lors de l’enregistrement');
+            const res = await response.json();
+            if (!response.ok) {
+                throw new Error(res.message || "Erreur lors de la mise à jour");
+            }
 
-            setMessage(data.message || 'Enregistré avec succès !');
-        } catch (error: any) {
-            setMessage(error.message);
-        } finally {
-            setSaving(false);
+            Turbo.visit("/");
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    return (
-        <UserForm
-            form={form}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            saving={saving}
-            message={message}
-        />
-    );
+    return {
+        register,
+        handleSubmit,
+        onSubmit,
+        errors,
+        isSubmitting,
+        reset,
+    };
 }

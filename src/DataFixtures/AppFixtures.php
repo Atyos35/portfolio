@@ -33,6 +33,7 @@ class AppFixtures extends Fixture
         $user->setAge('34');
         $user->setCity('Rennes');
         $user->setPhone('0684445191');
+        $user->setIsVerified(true);
 
         $password = $this->passwordHasher->hashPassword($user, 'password');
         $user->setPassword($password);
