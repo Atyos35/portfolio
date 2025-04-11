@@ -18,24 +18,18 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 #[Route('/user')]
 final class UserController extends AbstractController
 {
-
-    public function __construct(
-        private readonly Security $security,
-    ) {
-    }
-
     #[Route(name: 'app_user_get', methods: ['GET'])]
-    public function get(): JsonResponse
+    public function get(Security $security): JsonResponse
     {
         /** @var User $user */
-        $user = $this->security->getUser();
+        $user = $security->getUser();
 
         if (!$user) {
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
         return new JsonResponse([
-            'user' => $user->getId(),
+            'id' => $user->getId(),
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
             'email' => $user->getEmail(),
@@ -61,7 +55,7 @@ final class UserController extends AbstractController
 
         $form->submit($data);
 
-        if($csrfTokenManager->isTokenValid(new CsrfToken('edit_user', $data['_csrf_token']))) {
+        if($csrfTokenManager->isTokenValid(new CsrfToken('user_form', $data['_csrf_token']))) {
             if (!$form->isValid()) {
                 $errors = [];
 
