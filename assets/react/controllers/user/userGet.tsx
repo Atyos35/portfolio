@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Modal from '../modal/modal';
+import Modal from '../components/molecules/modal/modal';
 import { useUserForm } from './useUserForm';
-import useOpenModal from '../modal/useOpenModal';
+import useOpenModal from '../components/molecules/modal/useOpenModal';
 import UserForm from './userForm';  // On importe UserForm
 
 type Props = {
-    getUserAction: string;
+    user: User;
     editUserAction: string;
     csrfToken: string;
 };
@@ -23,33 +23,10 @@ type User = {
     csrfToken: string;
 };
 
-export default function UserGet({ getUserAction, editUserAction, csrfToken }: Props) {
-    const [user, setUser] = useState<User | null>(null);
+export default function UserGet({ user, editUserAction, csrfToken }: Props) {
     const { isOpen, open, close } = useOpenModal();
 
     const userFormProps = useUserForm(editUserAction, csrfToken);
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await fetch(getUserAction, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error while getting User infos');
-                }
-
-                const data = await response.json();
-                setUser(data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchUser();
-    }, [getUserAction]);
 
     if (!user) return <div>Chargement...</div>;
 

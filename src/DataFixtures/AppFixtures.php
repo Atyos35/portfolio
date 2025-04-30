@@ -60,7 +60,7 @@ class AppFixtures extends Fixture
             $experience->setStartDate(new \DateTime($startDate));
             $experience->setEndDate($endDate ? new \DateTime($endDate) : null);
             $experience->setDescription($description);
-            $experience->setUser($user);
+            $user->addExperience($experience);
 
             if ($endDate) {
                 $start = new \DateTime($startDate);
@@ -87,7 +87,7 @@ class AppFixtures extends Fixture
             $training->setSchool($school);
             $training->setStartDate(new \DateTime($startDate));
             $training->setEndDate(new \DateTime($endDate));
-            $training->setUser($user);
+            $user->addTraining($training);
 
             $manager->persist($training);
         }

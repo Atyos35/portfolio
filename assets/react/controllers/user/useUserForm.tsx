@@ -4,12 +4,12 @@ import * as z from "zod";
 import * as Turbo from "@hotwired/turbo";
 
 const schema = z.object({
-    firstname: z.string().optional(),
-    lastname: z.string().optional(),
-    job: z.string().optional(),
+    firstname: z.string(),
+    lastname: z.string(),
+    job: z.string(),
     linkedin: z.string().optional(),
-    age: z.string().optional(),
-    city: z.string().optional(),
+    age: z.string(),
+    city: z.string(),
     phone: z.string().min(10, "Le numéro de téléphone est invalide").optional(),
 });
 
@@ -35,7 +35,11 @@ export function useUserForm(action: string, csrfToken: string) {
             const response = await fetch(action, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...data, _csrf_token: csrfToken }),
+                body: JSON.stringify({
+                    ...data,
+                    _method: 'PUT',
+                    _csrf_token: csrfToken,
+                  })
             });
 
             const res = await response.json();

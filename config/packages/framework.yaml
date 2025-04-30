@@ -1,5 +1,10 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
+    serializer:
+        enabled: true
+        default_context:
+            datetime_format: 'Y-m-d'
+
     secret: '%env(APP_SECRET)%'
     csrf_protection: true
 
