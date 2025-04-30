@@ -25,10 +25,6 @@ class ExperienceType extends AbstractType
             ->add('description')
             ->add('company')
             ->add('city')
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 
@@ -36,6 +32,8 @@ class ExperienceType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Experience::class,
+            'allow_extra_fields' => true,
+            'csrf_protection' => false,
         ]);
     }
 }

@@ -14,34 +14,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use App\Provider\UserProvider;
 
 #[Route('/user')]
 final class UserController extends AbstractController
 {
-    #[Route(name: 'app_user_get', methods: ['GET'])]
-    public function get(Security $security): JsonResponse
-    {
-        /** @var User $user */
-        $user = $security->getUser();
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return new JsonResponse([
-            'id' => $user->getId(),
-            'firstname' => $user->getFirstname(),
-            'lastname' => $user->getLastname(),
-            'email' => $user->getEmail(),
-            'job' => $user->getJob(),
-            'linkedin' => $user->getLinkedin(),
-            'age' => $user->getAge(),
-            'city' => $user->getCity(),
-            'phone' => $user->getPhone(),
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_user_edit', methods: ['POST'])]
+    #[Route('/{id}/edit', name: 'app_user_edit', methods: ['PUT', 'POST'])]
     public function edit(
         Request $request,
         User $user,
@@ -68,6 +46,10 @@ final class UserController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
+        }else{
+            return $this->json([
+                'message' => 'Invalid csrf token',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         return $this->json([
