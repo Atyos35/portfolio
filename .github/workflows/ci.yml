@@ -27,6 +27,9 @@ jobs:
       MAILER_DSN: smtp://localhost:1025
     steps:
       -
+        name: Fix Git ownership issue
+        run: docker compose exec -T php git config --global --add safe.directory /app
+      -
         name: Checkout
         uses: actions/checkout@v4
       -
