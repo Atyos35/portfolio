@@ -36,6 +36,9 @@ RUN set -eux; \
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+# Transport to use by Mercure (default to Bolt)
+ENV MERCURE_TRANSPORT_URL=bolt:///data/mercure.db
+
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 
 ###> recipes ###
@@ -53,7 +56,9 @@ CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
 # Dev FrankenPHP image
 FROM frankenphp_base AS frankenphp_dev
 
-ENV APP_ENV=dev XDEBUG_MODE=off
+ENV APP_ENV=dev
+ENV XDEBUG_MODE=off
+ENV FRANKENPHP_WORKER_CONFIG=watch
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
@@ -70,33 +75,24 @@ CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--watch" ]
 FROM frankenphp_base AS frankenphp_prod
 
 ENV APP_ENV=prod
-ENV FRANKENPHP_CONFIG="import worker.Caddyfile"
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY --link frankenphp/conf.d/20-app.prod.ini $PHP_INI_DIR/app.conf.d/
-COPY --link frankenphp/worker.Caddyfile /etc/caddy/worker.Caddyfile
 
-# Installer les vendors sans dev, plus rapide
-COPY .env /app/.env
+# prevent the reinstallation of vendors at every changes in the source code
 COPY --link composer.* symfony.* ./
+COPY .env .env
 RUN set -eux; \
-	export $(cat /app/.env | xargs) && \
-    composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+	composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
-# Copier le code source
+# copy sources
 COPY --link . ./
-
-# Nettoyer les fichiers inutiles pour l'image finale
 RUN rm -Rf frankenphp/
 
-# Build final du cache Symfony prod
 RUN set -eux; \
-    mkdir -p var/cache var/log; \
-    composer dump-autoload --classmap-authoritative --no-dev; \
-    composer dump-env prod; \
-    composer run-script --no-dev post-install-cmd; \
-    php bin/console cache:clear --env=prod --no-warmup; \
-    php bin/console cache:warmup --env=prod; \
-    chmod +x bin/console; \
-    sync;
+	mkdir -p var/cache var/log; \
+	composer dump-autoload --classmap-authoritative --no-dev; \
+	composer dump-env prod; \
+	composer run-script --no-dev post-install-cmd; \
+	chmod +x bin/console; sync;
