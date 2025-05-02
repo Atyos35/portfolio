@@ -42,7 +42,10 @@ jobs:
           echo "MAILER_DSN=smtp://localhost:1025" >> .env
         
       - name: Build Docker images and start services
-        run: docker compose -f 'compose.yaml' up -d --build 
+        run: docker compose -f 'compose.yaml' up -d --build
+
+      - name: Install Composer dependencies
+        run: docker compose exec -T php composer install --no-interaction --prefer-dist --optimize-autoloader
         
       - name: Fix Git ownership issue
         run: docker compose exec -T php git config --global --add safe.directory /app
