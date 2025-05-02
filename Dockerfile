@@ -80,12 +80,14 @@ COPY --link frankenphp/worker.Caddyfile /etc/caddy/worker.Caddyfile
 # Installer les vendors sans dev, plus rapide
 COPY --link composer.* symfony.* ./
 RUN set -eux; \
-    APP_SECRET=${APP_SECRET} \
+    KERNEL_CLASS='App\Kernel' \
+    APP_SECRET=${{ secrets.APP_SECRET }} \
     SYMFONY_DEPRECATIONS_HELPER=999999 \
-    MYSQL_USER=${MYSQL_USER} \
-    MYSQL_PASSWORD=${MYSQL_PASSWORD} \
-    MYSQL_DATABASE=${MYSQL_DATABASE} \
-    DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}?serverVersion=8&charset=utf8" \
+    MYSQL_USER=${{ secrets.MYSQL_USER }} \
+    MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+    MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} \
+    MYSQL_VERSION=8.4.4 \
+    DATABASE_URL="mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@localhost:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=8&charset=utf8" \
     MAILER_DSN=smtp://localhost:1025 \
     APP_ENV=prod \
     composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
