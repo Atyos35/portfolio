@@ -80,6 +80,14 @@ COPY --link frankenphp/worker.Caddyfile /etc/caddy/worker.Caddyfile
 # Installer les vendors sans dev, plus rapide
 COPY --link composer.* symfony.* ./
 RUN set -eux; \
+    APP_SECRET=${APP_SECRET} \
+    SYMFONY_DEPRECATIONS_HELPER=999999 \
+    MYSQL_USER=${MYSQL_USER} \
+    MYSQL_PASSWORD=${MYSQL_PASSWORD} \
+    MYSQL_DATABASE=${MYSQL_DATABASE} \
+    DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}?serverVersion=8&charset=utf8" \
+    MAILER_DSN=smtp://localhost:1025 \
+    APP_ENV=prod \
     composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
 # Copier le code source
@@ -88,7 +96,6 @@ COPY --link . ./
 # Nettoyer les fichiers inutiles pour l'image finale
 RUN rm -Rf frankenphp/
 
-COPY .env .env
 # Build final du cache Symfony prod
 RUN set -eux; \
     mkdir -p var/cache var/log; \
