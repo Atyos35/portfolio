@@ -40,7 +40,8 @@ jobs:
           load: true
           files: |
             compose.yaml
-            compose.override.yaml
+            compose.prod.yaml
+
           set: |
             *.cache-from=type=gha,scope=${{github.ref}}
             *.cache-from=type=gha,scope=refs/heads/main
