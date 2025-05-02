@@ -1,5 +1,8 @@
 services:
   php:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: ${IMAGES_PREFIX:-}app-php
     restart: unless-stopped
     networks:
