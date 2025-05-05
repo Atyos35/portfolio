@@ -44,14 +44,6 @@ jobs:
       - name: Build Docker images and start services
         run: docker compose -f 'compose.yaml' up -d --build
 
-      - name: Wait for MySQL to be ready
-        run: |
-          for i in {1..20}; do
-            docker compose exec -T database mysql -h127.0.0.1 -uroot -proot -e "SELECT 1" && break
-            echo "Waiting for database..."
-            sleep 3
-          done
-
       - name: Check logs if php is restarting
         run: docker compose logs php
         
