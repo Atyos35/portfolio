@@ -38,11 +38,19 @@ jobs:
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
           echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
           echo "MYSQL_VERSION=8.4.4" >> .env
-          echo "DATABASE_URL='mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@localhost:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=8&charset=utf8'" >> .env
+          echo "DATABASE_URL=\"mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@database:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=8&charset=utf8\"" >> .env
           echo "MAILER_DSN=smtp://localhost:1025" >> .env
         
       - name: Build Docker images and start services
         run: docker compose -f 'compose.yaml' up -d --build
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..20}; do
+            docker compose exec -T database mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e "SELECT 1" && break
+            echo "Waiting for database..."
+            sleep 3
+          done
 
       - name: Check logs if php is restarting
         run: docker compose logs php
