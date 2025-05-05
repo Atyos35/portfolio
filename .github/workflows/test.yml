@@ -44,12 +44,17 @@ jobs:
       - name: Build Docker images and start services
         run: docker compose -f 'compose.yaml' up -d --build
 
-      - name: Wait for MySQL to be ready
+      - name: Wait for MySQL to be healthy
         run: |
           for i in {1..20}; do
-            docker compose exec -T database mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e "SELECT 1" && break
-            echo "Waiting for database..."
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q database))
+            if [ "$STATUS" = "healthy" ]; then
+              echo "MySQL is healthy"
+              break
+            fi
+            echo "Waiting for MySQL to become healthy..."
             sleep 3
+          done3
           done
 
       - name: Check logs if php is restarting
