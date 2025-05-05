@@ -43,6 +43,9 @@ jobs:
         
       - name: Build Docker images and start services
         run: docker compose -f 'compose.yaml' up -d --build
+
+      - name: Check logs if php is restarting
+        run: docker compose logs php
         
       - name: Fix Git ownership issue
         run: docker compose exec -T php git config --global --add safe.directory /app
