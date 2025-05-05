@@ -45,7 +45,7 @@ jobs:
         run: docker compose -f 'compose.yaml' up -d --build
 
       - name: Install Composer dependencies
-        run: docker compose exec -T php composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: docker compose exec -T php composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts -vvv
         
       - name: Fix Git ownership issue
         run: docker compose exec -T php git config --global --add safe.directory /app
