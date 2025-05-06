@@ -105,4 +105,48 @@ class TrainingControllerTest extends TestCase
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
     }
+
+    public function testEditTrainingSuccess(): void
+    {
+        $user = $this->createMock(User::class);
+        $training = new Training();
+
+        $requestData = [
+            '_csrf_token' => 'valid_token',
+            'title' => 'Lead Dev',
+            'description' => 'Mise en place d’architecture',
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+
+        $form = $this->createMock(FormInterface::class);
+        $form->expects($this->once())->method('handleRequest')->with($request);
+        $form->expects($this->once())->method('submit')->with($requestData);
+        $form->expects($this->once())->method('isValid')->willReturn(true);
+
+        $formFactory = $this->createMock(FormFactoryInterface::class);
+        $formFactory->method('create')->willReturn($form);
+
+        $csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrfManager->method('isTokenValid')
+            ->with(new CsrfToken('training_form', 'valid_token'))
+            ->willReturn(true);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('persist')->with($training);
+        $entityManager->expects($this->once())->method('flush');
+
+        $userProvider = $this->createMock(UserProvider::class);
+        $userProvider->method('getCurrentUser')->willReturn($user);
+
+        $controller = new TrainingController();
+        $container = $this->createMock(ContainerInterface::class);
+        $container->method('get')->with('form.factory')->willReturn($formFactory);
+        $controller->setContainer($container);
+
+        $response = $controller->edit($request, $training, $entityManager, $csrfManager, $userProvider);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+    }
 }

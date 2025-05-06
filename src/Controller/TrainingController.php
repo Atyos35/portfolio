@@ -63,4 +63,45 @@ final class TrainingController extends AbstractController
             'message' => 'Création réussie',
         ], Response::HTTP_CREATED);
     }
+
+    #[Route('/{id}/edit', name: 'app_training_edit', methods: ['PUT', 'POST'])]
+    public function edit(
+        Request $request, 
+        Training $training, 
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserProvider $userProvider): Response
+    {
+        $user = $userProvider->getCurrentUser();
+
+        $data = json_decode($request->getContent(), true);
+        
+        $form = $this->createForm(TrainingType::class, $training);
+        $form->handleRequest($request);
+
+        $form->submit($data);
+
+        if($csrfTokenManager->isTokenValid(new CsrfToken('training_form', $data['_csrf_token']))) {
+            if (!$form->isValid()) {
+                $errors = [];
+
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[$error->getOrigin()->getName()] = $error->getMessage();
+                }
+
+                return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
+            }
+            
+            $entityManager->persist($training);
+            $entityManager->flush();
+        }else{
+            return $this->json([
+                'message' => 'Invalid csrf token',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json([
+            'message' => 'Édition réussie',
+        ], Response::HTTP_CREATED);
+    }
 }
