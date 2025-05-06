@@ -4,6 +4,8 @@ import { Training } from '../../models/trainings/training.model';
 import AddTrainingModal from '../../components/organisms/trainings/addTrainingModal';
 import AddButton from '../../components/atoms/addButton';
 import EditTrainingModal from '../../components/organisms/trainings/editTrainingModal';
+import { deleteEntity } from '../../utils/deleteEntity';
+import DeleteModal from '../organisms/deleteModal';
 
 interface TrainingPageProps {
   trainings: Training[];
@@ -24,7 +26,39 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
     sortByDateDesc(initialTrainings)
   );
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [trainingToEdit, setTrainingToEdit] = useState<Training | null>(null);
+  const [trainingToDelete, setTrainingToDelete] = useState<number | null>(null);
+
+  const handleDeleteClick = (id: number) => {
+    setTrainingToDelete(id);
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (trainingToDelete !== null) {
+      try {
+        await deleteEntity({
+          action: `/training/${trainingToDelete}`,
+          csrfToken,
+          entityName: "la formation",
+        });
+        setTrainings((prev) => prev.filter((training) => training.id !== trainingToDelete));
+      } catch (error: any) {
+        console.error(error.message);
+        alert("Erreur lors de la suppression : " + error.message);
+      }
+    }
+    setIsModalOpen(false);
+    setTrainingToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setIsModalOpen(false);
+    setTrainingToDelete(null);
+  };
 
   const handleAddTraining = (training: Training) => {
       setTrainings((prevTrainings) =>
@@ -47,12 +81,10 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
       );
     };
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [trainingToEdit, setTrainingToEdit] = useState<Training | null>(null);
-
   const cancel = () => {
     setIsAddModalOpen(false);
     setIsEditModalOpen(false);
+    setTrainingToEdit(null);
   };
 
   return (
@@ -63,6 +95,7 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
       </h1>
       <TrainingList
         trainings={trainings}
+        onDeleted={handleDeleteClick}
         onEdit={handleEditClick}
       />
       {isAddModalOpen && (
@@ -73,6 +106,11 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
           onAdd={handleAddTraining}
         />
       )}
+      <DeleteModal
+        isOpen={isModalOpen}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
       {isEditModalOpen && trainingToEdit && (
         <EditTrainingModal
           isOpen={isEditModalOpen}

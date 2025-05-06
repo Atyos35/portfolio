@@ -5,11 +5,13 @@ import TrainingItem from './trainingItem';
 interface TrainingListProps {
   trainings: Training[];
   onEdit: (values: any) => void;
+  onDeleted: (id: number) => void;
 }
 
 const TrainingList: React.FC<TrainingListProps> = ({
   trainings,
   onEdit,
+  onDeleted,
 }) => {
   return (
     <div className="space-y-4">
@@ -18,6 +20,7 @@ const TrainingList: React.FC<TrainingListProps> = ({
           key={training.id}
           training={training}
           onEdit={onEdit}
+          onDelete={onDeleted}
         />
       ))}
     </div>

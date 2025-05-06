@@ -1,4 +1,3 @@
-// ExperienceItem.tsx
 import React from 'react';
 import { Experience } from '../../../models/experiences/experience.model';
 import { formatDuration } from '../../../utils/formatDuration';

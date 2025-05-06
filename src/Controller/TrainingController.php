@@ -104,4 +104,28 @@ final class TrainingController extends AbstractController
             'message' => 'Édition réussie',
         ], Response::HTTP_CREATED);
     }
+
+    #[Route('/{id}', name: 'app_training_delete', methods: ['DELETE'])]
+    public function delete(
+        Request $request,
+        Training $training,
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager): Response 
+    {
+        $token = $request->headers->get('X-CSRF-TOKEN');
+        $data = json_decode($request->getContent(), true);
+
+        if (!$csrfTokenManager->isTokenValid(new CsrfToken('training_form', $data['_csrf_token']))) {
+            return $this->json([
+                'message' => 'Jeton CSRF invalide.',
+            ], Response::HTTP_FORBIDDEN);
+        }
+        
+        $entityManager->remove($training);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Suppression réussie',
+        ], Response::HTTP_NO_CONTENT);
+    }
 }
