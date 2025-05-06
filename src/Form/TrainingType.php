@@ -15,18 +15,15 @@ class TrainingType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('description')
             ->add('start_date', null, [
                 'widget' => 'single_text',
             ])
             ->add('end_date', null, [
                 'widget' => 'single_text',
             ])
+            ->add('description')
             ->add('school')
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
+            ->add('city')
         ;
     }
 
@@ -34,6 +31,8 @@ class TrainingType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Training::class,
+            'allow_extra_fields' => true,
+            'csrf_protection' => false
         ]);
     }
 }
