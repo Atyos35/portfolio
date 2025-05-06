@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Training;
+use App\Service\TrainingService;
+use App\Entity\User;
 use App\Form\TrainingType;
 use App\Repository\TrainingRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,72 +12,120 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Provider\UserProvider;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/training')]
 final class TrainingController extends AbstractController
 {
-    #[Route(name: 'app_training_index', methods: ['GET'])]
-    public function index(TrainingRepository $trainingRepository): Response
+    #[Route('/new', name: 'app_training_new', methods: ['PUT', 'POST'])]
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserProvider $userProvider): Response
     {
-        return $this->render('training/index.html.twig', [
-            'trainings' => $trainingRepository->findAll(),
-        ]);
-    }
 
-    #[Route('/new', name: 'app_training_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
         $training = new Training();
+
+        $user = $userProvider->getCurrentUser();
+
+        $data = json_decode($request->getContent(), true);
+
         $form = $this->createForm(TrainingType::class, $training);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        $form->submit($data);
+
+        if($csrfTokenManager->isTokenValid(new CsrfToken('training_form', $data['_csrf_token']))) {
+            if (!$form->isValid()) {
+                $errors = [];
+
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[$error->getOrigin()->getName()] = $error->getMessage();
+                }
+
+                return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
+            }
+            $training->setUser($user);
             $entityManager->persist($training);
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_training_index', [], Response::HTTP_SEE_OTHER);
+        }else{
+            return $this->json([
+                'message' => 'Invalid csrf token',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->render('training/new.html.twig', [
-            'training' => $training,
-            'form' => $form,
-        ]);
+        return $this->json([
+            'message' => 'Création réussie',
+        ], Response::HTTP_CREATED);
     }
 
-    #[Route('/{id}', name: 'app_training_show', methods: ['GET'])]
-    public function show(Training $training): Response
+    #[Route('/{id}/edit', name: 'app_training_edit', methods: ['PUT', 'POST'])]
+    public function edit(
+        Request $request, 
+        Training $training, 
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserProvider $userProvider): Response
     {
-        return $this->render('training/show.html.twig', [
-            'training' => $training,
-        ]);
-    }
+        $user = $userProvider->getCurrentUser();
 
-    #[Route('/{id}/edit', name: 'app_training_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Training $training, EntityManagerInterface $entityManager): Response
-    {
+        $data = json_decode($request->getContent(), true);
+        
         $form = $this->createForm(TrainingType::class, $training);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+        $form->submit($data);
 
-            return $this->redirectToRoute('app_training_index', [], Response::HTTP_SEE_OTHER);
+        if($csrfTokenManager->isTokenValid(new CsrfToken('training_form', $data['_csrf_token']))) {
+            if (!$form->isValid()) {
+                $errors = [];
+
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[$error->getOrigin()->getName()] = $error->getMessage();
+                }
+
+                return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
+            }
+            
+            $entityManager->persist($training);
+            $entityManager->flush();
+        }else{
+            return $this->json([
+                'message' => 'Invalid csrf token',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->render('training/edit.html.twig', [
-            'training' => $training,
-            'form' => $form,
-        ]);
+        return $this->json([
+            'message' => 'Édition réussie',
+        ], Response::HTTP_CREATED);
     }
 
-    #[Route('/{id}', name: 'app_training_delete', methods: ['POST'])]
-    public function delete(Request $request, Training $training, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}', name: 'app_training_delete', methods: ['DELETE'])]
+    public function delete(
+        Request $request,
+        Training $training,
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager): Response 
     {
-        if ($this->isCsrfTokenValid('delete'.$training->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($training);
-            $entityManager->flush();
-        }
+        $token = $request->headers->get('X-CSRF-TOKEN');
+        $data = json_decode($request->getContent(), true);
 
-        return $this->redirectToRoute('app_training_index', [], Response::HTTP_SEE_OTHER);
+        if (!$csrfTokenManager->isTokenValid(new CsrfToken('training_form', $data['_csrf_token']))) {
+            return $this->json([
+                'message' => 'Jeton CSRF invalide.',
+            ], Response::HTTP_FORBIDDEN);
+        }
+        
+        $entityManager->remove($training);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Suppression réussie',
+        ], Response::HTTP_NO_CONTENT);
     }
 }

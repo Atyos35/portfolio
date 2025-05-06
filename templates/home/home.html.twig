@@ -12,4 +12,9 @@
             experiences: experiences,
             csrfToken: csrf_token('experience_form')
             }) }}></div>
+
+    <div {{ react_component('components/pages/trainingPage', {
+            trainings: trainings,
+            csrfToken: csrf_token('training_form')
+            }) }}></div>
 {% endblock %}

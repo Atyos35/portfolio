@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\User;
 use App\Provider\UserProvider;
 use App\Service\ExperienceService;
+use App\Service\TrainingService;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,10 +31,14 @@ class HomeControllerTest extends WebTestCase
         $experienceService = $this->createMock(ExperienceService::class);
         $experienceService->method('getUserExperiences')->with($user)->willReturn(['exp1', 'exp2']);
 
+        $trainingService = $this->createMock(TrainingService::class);
+        $trainingService->method('getUserTrainings')->with($user)->willReturn(['train1', 'train2']);
+
         $userService = new UserService();
 
         $container->set(UserProvider::class, $userProvider);
         $container->set(ExperienceService::class, $experienceService);
+        $container->set(TrainingService::class, $trainingService);
         $container->set(UserService::class, $userService);
 
         $client->request('GET', '/');
