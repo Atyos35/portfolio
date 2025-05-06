@@ -39,7 +39,7 @@ final class ExperienceController extends AbstractController
         $form->handleRequest($request);
 
         $form->submit($data);
-
+        
         if($csrfTokenManager->isTokenValid(new CsrfToken('experience_form', $data['_csrf_token']))) {
             if (!$form->isValid()) {
                 $errors = [];

@@ -13,7 +13,7 @@ export type Training = {
     city: string;
   };  
 
-export const emptyExperience: Training = {
+export const emptyTraining: Training = {
     id: 0,
     name: "",
     start_date: "",
