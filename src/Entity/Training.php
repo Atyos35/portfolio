@@ -26,6 +26,12 @@ class Training
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $end_date = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateInterval $duration = null;
+
+    #[ORM\Column(length: 15)]
+    private ?string $city = null;
+
     #[ORM\ManyToOne(inversedBy: 'trainings')]
     private ?User $user = null;
 
@@ -66,10 +72,12 @@ class Training
         return $this->start_date;
     }
 
-    public function setStartDate(\DateTimeInterface $start_date): static
+    public function setStartDate(\DateTime $startDate): self
     {
-        $this->start_date = $start_date;
-
+        $this->start_date = $startDate;
+        if ($this->end_date) {
+            $this->duration = $this->start_date->diff($this->end_date);
+        }
         return $this;
     }
 
@@ -78,9 +86,37 @@ class Training
         return $this->end_date;
     }
 
-    public function setEndDate(\DateTimeInterface $end_date): static
+    public function setEndDate(?\DateTime $endDate): self
     {
-        $this->end_date = $end_date;
+        $this->end_date = $endDate;
+        if ($this->start_date && $this->end_date) {
+            $this->duration = $this->start_date->diff($this->end_date);
+        } else {
+            $this->duration = null;
+        }
+        return $this;
+    }
+
+    public function getDuration(): ?\DateInterval
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(?\DateInterval $duration): static
+    {
+        $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
 
         return $this;
     }

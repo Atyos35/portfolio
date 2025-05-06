@@ -74,19 +74,20 @@ class AppFixtures extends Fixture
         }        
 
         $trainings = [
-            ['Concepteur Développeur en Projets Numériques', 'Titre de niveau II (BAC+4)', 'IMIE Bruz', '2016-09-01', '2018-07-01'],
-            ['Développeur Logiciel', 'Titre de niveau III (BAC+2)', 'IMIE Bruz', '2014-09-01', '2016-07-01'],
-            ['BAC PRO Logistique', '', 'Lycée Bel Air Tinténiac', '2009-09-01', '2011-06-30'],
-            ['BEP CSTR', '', 'Lycée Bel Air Tinténiac', '2006-09-01', '2009-07-01']
+            ['Concepteur Développeur en Projets Numériques', 'Titre de niveau II (BAC+4)', 'IMIE Bruz', '2016-09-01', '2018-07-01', 'Rennes'],
+            ['Développeur Logiciel', 'Titre de niveau III (BAC+2)', 'IMIE Bruz', '2014-09-01', '2016-07-01', 'Rennes'],
+            ['BAC PRO Logistique', 'BAC', 'Lycée Bel Air Tinténiac', '2009-09-01', '2011-06-30', 'Rennes'],
+            ['BEP CSTR', 'BEP', 'Lycée Bel Air Tinténiac', '2006-09-01', '2009-07-01', 'Rennes']
         ];
 
-        foreach ($trainings as [$name, $description, $school, $startDate, $endDate]) {
+        foreach ($trainings as [$name, $description, $school, $startDate, $endDate, $city]) {
             $training = new Training();
             $training->setName($name);
             $training->setDescription($description);
             $training->setSchool($school);
             $training->setStartDate(new \DateTime($startDate));
             $training->setEndDate(new \DateTime($endDate));
+            $training->setCity($city);
             $user->addTraining($training);
 
             $manager->persist($training);

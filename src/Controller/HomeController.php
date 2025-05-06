@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Provider\UserProvider;
 use App\Service\UserService;
 use App\Service\ExperienceService;
+use App\Service\TrainingService;
 
 class HomeController extends AbstractController
 {
@@ -23,14 +24,17 @@ class HomeController extends AbstractController
         EntityManagerInterface $entityManager, 
         UserProvider $userProvider,
         ExperienceService $experienceService,
+        TrainingService $trainingService,
         UserService $userService): Response
     {
         $user = $userProvider->getCurrentUser();
         $experiences = $experienceService->getUserExperiences($user);
-
+        $trainings = $trainingService->getUserTrainings($user);
+        
         return $this->render('home/home.html.twig', [
             'user' => $userService->formatUserData($user),
             'experiences' => $experiences,
+            'trainings' => $trainings,
         ]);
     }
 
