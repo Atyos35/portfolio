@@ -5,6 +5,7 @@ import { Experience } from '../../models/experiences/experience.model';
 import EditExperienceModal from '../../components/organisms/experiences/editExperienceModal';
 import AddExperienceModal from '../../components/organisms/experiences/addExperienceModal';
 import AddButton from '../../components/atoms/addButton';
+import { deleteEntity } from '../../utils/deleteEntity';
 
 interface ExperiencePageProps {
   experiences: Experience[];
@@ -37,9 +38,19 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
     setIsModalOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (experienceToDelete !== null) {
-      setExperiences((prev) => prev.filter((exp) => exp.id !== experienceToDelete));
+      try {
+        await deleteEntity({
+          action: `/experience/${experienceToDelete}`,
+          csrfToken,
+          entityName: "l’expérience",
+        });
+        setExperiences((prev) => prev.filter((exp) => exp.id !== experienceToDelete));
+      } catch (error: any) {
+        console.error(error.message);
+        alert("Erreur lors de la suppression : " + error.message);
+      }
     }
     setIsModalOpen(false);
     setExperienceToDelete(null);
@@ -87,7 +98,6 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
         experiences={experiences}
         onDeleted={handleDeleteClick}
         onEdit={handleEditClick}
-        csrfToken={csrfToken}
       />
       {isAddModalOpen && (
         <AddExperienceModal

@@ -4,14 +4,12 @@ import ExperienceItem from './experienceItem';
 
 interface ExperienceListProps {
   experiences: Experience[];
-  csrfToken: string;
   onDeleted: (id: number) => void;
-  onEdit: (values: any) => void;
+  onEdit: (experience: Experience) => void;
 }
 
 const ExperienceList: React.FC<ExperienceListProps> = ({
   experiences,
-  csrfToken,
   onDeleted,
   onEdit,
 }) => {
@@ -21,8 +19,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({
         <ExperienceItem
           key={experience.id}
           experience={experience}
-          csrfToken={csrfToken}
-          onDeleted={onDeleted}
+          onDelete={onDeleted}
           onEdit={onEdit}
         />
       ))}
