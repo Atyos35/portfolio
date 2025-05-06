@@ -3,6 +3,7 @@ import TrainingList from '../organisms/trainings/trainingList';
 import { Training } from '../../models/trainings/training.model';
 import AddTrainingModal from '../../components/organisms/trainings/addTrainingModal';
 import AddButton from '../../components/atoms/addButton';
+import EditTrainingModal from '../../components/organisms/trainings/editTrainingModal';
 
 interface TrainingPageProps {
   trainings: Training[];
@@ -31,8 +32,27 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
       );
     };
 
+  const handleEditClick = (training: Training) => {
+      setTrainingToEdit(training);
+      setIsEditModalOpen(true);
+    };
+
+  const handleEditTraining = (updatedTraining: Training) => {
+      setTrainings((prevTrainings) =>
+        sortByDateDesc(
+          prevTrainings.map((training) =>
+            training.id === updatedTraining.id ? updatedTraining : training
+          )
+        )
+      );
+    };
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [trainingToEdit, setTrainingToEdit] = useState<Training | null>(null);
+
   const cancel = () => {
     setIsAddModalOpen(false);
+    setIsEditModalOpen(false);
   };
 
   return (
@@ -43,7 +63,7 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
       </h1>
       <TrainingList
         trainings={trainings}
-        csrfToken={csrfToken}
+        onEdit={handleEditClick}
       />
       {isAddModalOpen && (
         <AddTrainingModal
@@ -51,6 +71,23 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
           onClose={cancel}
           csrfToken={csrfToken}
           onAdd={handleAddTraining}
+        />
+      )}
+      {isEditModalOpen && trainingToEdit && (
+        <EditTrainingModal
+          isOpen={isEditModalOpen}
+          onClose={cancel}
+          csrfToken={csrfToken}
+          initialValues={{
+            id: trainingToEdit.id,
+            name: trainingToEdit.name,
+            start_date: trainingToEdit.start_date,
+            end_date: trainingToEdit.end_date,
+            school: trainingToEdit.school,
+            city: trainingToEdit.city,
+            description: trainingToEdit.description
+          }}
+          onEdit={handleEditTraining}
         />
       )}
     </div>

@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Training } from '../../../models/trainings/training.model';
 import { formatDuration } from '../../../utils/formatDuration';
+import EditButton from '../../atoms/editButton';
 
 interface TrainingItemProps {
   training: Training;
-  csrfToken: string;
+  onEdit: (values: any) => void;
 }
 
 const TrainingItem: React.FC<TrainingItemProps> = ({
   training,
+  onEdit,
 }) => {
-
   return (
     <div className="p-4 border rounded shadow-sm flex justify-between items-center">
       <div>
@@ -22,6 +23,9 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
           {training.start_date} - {training.end_date}
           {training.duration && <> ({formatDuration(training.duration)})</>}
         </p>
+      </div>
+      <div className="flex space-x-2">
+        <EditButton onClick={() => onEdit(training)} />
       </div>
     </div>
   );

@@ -4,12 +4,12 @@ import TrainingItem from './trainingItem';
 
 interface TrainingListProps {
   trainings: Training[];
-  csrfToken: string;
+  onEdit: (values: any) => void;
 }
 
 const TrainingList: React.FC<TrainingListProps> = ({
   trainings,
-  csrfToken,
+  onEdit,
 }) => {
   return (
     <div className="space-y-4">
@@ -17,7 +17,7 @@ const TrainingList: React.FC<TrainingListProps> = ({
         <TrainingItem
           key={training.id}
           training={training}
-          csrfToken={csrfToken}
+          onEdit={onEdit}
         />
       ))}
     </div>
