@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 class TrainingControllerTest extends TestCase
 {
@@ -149,4 +150,67 @@ class TrainingControllerTest extends TestCase
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
     }
+
+    public function testDeleteTrainingSuccess(): void
+    {
+        $training = $this->createMock(Training::class);
+
+        $csrfToken = 'valid_token';
+        $requestData = [
+            '_csrf_token' => $csrfToken,
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request->headers->set('X-CSRF-TOKEN', $csrfToken);
+
+        $csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrfManager->method('isTokenValid')
+            ->with(new CsrfToken('training_form', $csrfToken))
+            ->willReturn(true);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('remove')->with($training);
+        $entityManager->expects($this->once())->method('flush');
+
+        $controller = new TrainingController();
+        $container = new Container();
+        $controller->setContainer($container);
+
+        $response = $controller->delete($request, $training, $entityManager, $csrfManager);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+    }
+
+    public function testDeleteTrainingInvalidCsrf(): void
+    {
+        $training = $this->createMock(Training::class);
+
+        $csrfToken = 'invalid_token';
+        $requestData = [
+            '_csrf_token' => $csrfToken,
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request->headers->set('X-CSRF-TOKEN', $csrfToken);
+
+        $csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrfManager->method('isTokenValid')
+            ->with(new CsrfToken('training_form', $csrfToken))
+            ->willReturn(false);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+        $entityManager->expects($this->never())->method('flush');
+
+        $controller = new TrainingController();
+        $container = new Container();
+        $controller->setContainer($container);
+
+        $response = $controller->delete($request, $training, $entityManager, $csrfManager);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+    }
+
 }

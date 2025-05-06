@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { Training } from '../../../models/trainings/training.model';
 import { formatDuration } from '../../../utils/formatDuration';
 import EditButton from '../../atoms/editButton';
+import DeleteButton from '../../atoms/deleteButton';
 
 interface TrainingItemProps {
   training: Training;
   onEdit: (values: any) => void;
+  onDelete: (id: number) => void;
 }
 
 const TrainingItem: React.FC<TrainingItemProps> = ({
   training,
   onEdit,
+  onDelete,
 }) => {
   return (
     <div className="p-4 border rounded shadow-sm flex justify-between items-center">
@@ -26,6 +29,7 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
       </div>
       <div className="flex space-x-2">
         <EditButton onClick={() => onEdit(training)} />
+        <DeleteButton onClick={() => onDelete(training.id)} />
       </div>
     </div>
   );
