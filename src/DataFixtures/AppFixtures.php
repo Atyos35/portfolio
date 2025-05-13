@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Experience;
 use App\Entity\Training;
+use App\Entity\Block;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -91,6 +92,22 @@ class AppFixtures extends Fixture
             $user->addTraining($training);
 
             $manager->persist($training);
+        }
+
+        $blocks = [
+            ['Langages', ['PHP', 'JavaScript', "Python"]],
+            ['frameworks', ['Symfony', 'API Platform', "NestJS"]],
+            ['Logiciels', ['Postman', 'Docker', "Putty"]],
+            ['Base de données', ['MySQL', 'MongoDB']]
+        ];
+
+        foreach ($blocks as [$title, $names]) {
+            $block = new Block();
+            $block->setTitle($title);
+            $block->setNames($names);
+            $user->addBlock($block);
+
+            $manager->persist($block);
         }
 
         $manager->flush();
