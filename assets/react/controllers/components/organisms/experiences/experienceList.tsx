@@ -1,6 +1,6 @@
 import React from 'react';
 import { Experience } from '../../../models/experiences/experience.model';
-import ExperienceItem from './experienceItem';
+import ExperienceItem from '../experiences/experienceItem';
 
 interface ExperienceListProps {
   experiences: Experience[];
