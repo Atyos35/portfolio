@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Provider\UserProvider;
 use App\Service\ExperienceService;
 use App\Service\TrainingService;
+use App\Service\BlockService;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class HomeControllerTest extends WebTestCase
                           ->getRepository(User::class)
                           ->findOneByEmail('valerian.guemene@gmail.com');
 
-        $this->assertNotNull($user, 'L\'utilisateur n\'a pas été trouvé en base. Assure-toi que les fixtures sont chargées.');
+        $this->assertNotNull($user, 'L\'utilisateur n\'a pas été trouvé en base.');
 
         $client->loginUser($user);
 
@@ -34,11 +35,15 @@ class HomeControllerTest extends WebTestCase
         $trainingService = $this->createMock(TrainingService::class);
         $trainingService->method('getUserTrainings')->with($user)->willReturn(['train1', 'train2']);
 
+        $blockService = $this->createMock(BlockService::class);
+        $blockService->method('getUserBlocks')->with($user)->willReturn(['block1', 'block2']);
+
         $userService = new UserService();
 
         $container->set(UserProvider::class, $userProvider);
         $container->set(ExperienceService::class, $experienceService);
         $container->set(TrainingService::class, $trainingService);
+        $container->set(BlockService::class, $blockService);
         $container->set(UserService::class, $userService);
 
         $client->request('GET', '/');
