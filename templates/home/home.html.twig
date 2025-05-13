@@ -17,4 +17,9 @@
             trainings: trainings,
             csrfToken: csrf_token('training_form')
             }) }}></div>
+            
+     <div {{ react_component('components/pages/blockPage', {
+            blocks: blocks,
+            csrfToken: csrf_token('block_form')
+            }) }}></div>
 {% endblock %}
