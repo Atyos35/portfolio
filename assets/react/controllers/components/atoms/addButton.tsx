@@ -5,6 +5,7 @@ type Props = {
 export default function AddButton({ onClick }: Props) {
     return (
         <button
+            type="button"
             onClick={onClick}
             className="text-green-600 hover:text-green-800 transition-colors"
             title="Ajouter"

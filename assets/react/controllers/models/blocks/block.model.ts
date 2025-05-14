@@ -1,11 +1,11 @@
 export type Block = {
-    id: number;
-    title: string;
-    names: string[];
-  };  
+  id: number;
+  title: string;
+  names: { value: string }[];
+};
 
 export const emptyBlock: Block = {
-    id: 0,
-    title: "",
-    names: [],
-  };  
+  id: 0,
+  title: "",
+  names: [{ value: "" }],
+};
