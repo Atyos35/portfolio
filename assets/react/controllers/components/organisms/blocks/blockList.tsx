@@ -4,13 +4,22 @@ import BlockItem from './blockItem';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { Draggable } from '../../../utils/dnd/Draggable';
 import { Droppable } from '../../../utils/dnd/Droppable';
+import EditButton from '../../atoms/editButton';
 
 interface BlockListProps {
   blocks: Block[];
+  onEdit: (values: any) => void;
 }
 
-const BlockList: React.FC<BlockListProps> = ({ blocks: initialBlocks }) => {
-  const [blocks, setBlocks] = useState<Block[]>(initialBlocks);
+const BlockList: React.FC<BlockListProps> = ({ blocks: initialBlocks, onEdit }) => {
+  const mappedBlocks = initialBlocks.map(block => ({
+    ...block,
+    names: block.names.map(name =>
+      typeof name === 'string' ? { value: name } : name
+    ),
+  }));
+
+  const [blocks, setBlocks] = useState<Block[]>(mappedBlocks);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -33,10 +42,13 @@ const BlockList: React.FC<BlockListProps> = ({ blocks: initialBlocks }) => {
       <div className="space-y-4">
         {blocks.map((block) => (
           <Droppable key={block.id} id={block.id}>
+          <div className="flex justify-between items-center">
             <Draggable id={block.id}>
               <BlockItem block={block} />
             </Draggable>
-          </Droppable>
+            <EditButton onClick={() => onEdit(block)} />
+          </div>
+        </Droppable>
         ))}
       </div>
     </DndContext>
