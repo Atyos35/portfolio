@@ -67,4 +67,49 @@ final class BlockController extends AbstractController
             'message' => 'Création réussie',
         ], Response::HTTP_CREATED);
     }
+
+    #[Route('/{id}/edit', name: 'app_block_edit', methods: ['PUT', 'POST'])]
+    public function edit(
+        Request $request, 
+        Block $block, 
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserProvider $userProvider): Response
+    {
+        $user = $userProvider->getCurrentUser();
+
+        $data = json_decode($request->getContent(), true);
+        
+        $form = $this->createForm(BlockType::class, $block);
+        $form->handleRequest($request);
+
+        if (isset($data['names']) && is_array($data['names'])) {
+            $data['names'] = array_map(fn($n) => $n['value'] ?? '', $data['names']);
+        }
+
+        $form->submit($data);
+
+        if($csrfTokenManager->isTokenValid(new CsrfToken('block_form', $data['_csrf_token']))) {
+            if (!$form->isValid()) {
+                $errors = [];
+
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[$error->getOrigin()->getName()] = $error->getMessage();
+                }
+
+                return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
+            }
+            $block->setUser($user);
+            $entityManager->persist($block);
+            $entityManager->flush();
+        }else{
+            return $this->json([
+                'message' => 'Invalid csrf token',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json([
+            'message' => 'Édition réussie',
+        ], Response::HTTP_CREATED);
+    }
 }

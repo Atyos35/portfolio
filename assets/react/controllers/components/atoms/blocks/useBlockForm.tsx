@@ -7,11 +7,8 @@ import { Block } from "../../../models/blocks/block.model";
 const schema = z.object({
   id: z.number().optional(),
   title: z.string(),
-  names: z.array(
-    z.object({
-      value: z.string(),
-    })
-  ),
+  names: z.array(z.object({ value: z.string().min(1) }))
+  .min(1, { message: "Au moins un nom est requis." }),
 });
 
 export type BlockFormInput = z.infer<typeof schema>;

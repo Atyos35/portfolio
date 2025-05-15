@@ -48,14 +48,16 @@ export default function BlockForm({
 
       <div>
         {fields.map((field, index) => (
-          <div key={field.id}>
+          <div key={field.id} className="flex items-center space-x-2">
             <input
               type="text"
               {...register(`names.${index}.value`)}
               defaultValue={field.value}
               required
             />
-            <DeleteButton onClick={() => remove(index)} />
+            {fields.length > 1 && (
+              <DeleteButton onClick={() => remove(index)} />
+            )}
           </div>
         ))}
         <AddButton onClick={() => append({ value: "" })} />

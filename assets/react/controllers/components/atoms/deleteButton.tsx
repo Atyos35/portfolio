@@ -4,13 +4,12 @@ type Props = {
 
 export default function DeleteButton({ onClick }: Props) {
     return (
-        <button
-            type="button"
+        <span
             onClick={onClick}
             className="text-blue-600 hover:text-blue-800 transition-colors"
             title="Supprimer"
         >
             🗑️
-        </button>
+        </span>
     );
 }
