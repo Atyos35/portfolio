@@ -4,6 +4,8 @@ import { Block } from '../../models/blocks/block.model';
 import AddButton from '../../components/atoms/addButton';
 import AddBlockModal from '../../components/organisms/blocks/addBlockModal';
 import EditBlockModal from '../../components/organisms/blocks/editBlockModal';
+import { deleteEntity } from '../../utils/deleteEntity';
+import DeleteModal from '../organisms/deleteModal';
 
 interface BlockPageProps {
   blocks: Block[];
@@ -16,6 +18,36 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [blockToEdit, setBlockToEdit] = useState<Block | null>(null);
+  const [blockToDelete, setBlockToDelete] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const handleDeleteClick = (id: number) => {
+    setBlockToDelete(id);
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (blockToDelete !== null) {
+      try {
+        await deleteEntity({
+          action: `/block/${blockToDelete}`,
+          csrfToken,
+          entityName: "la formation",
+        });
+        setBlocks((prev) => prev.filter((block) => block.id !== blockToDelete));
+      } catch (error: any) {
+        console.error(error.message);
+        alert("Erreur lors de la suppression : " + error.message);
+      }
+    }
+    setIsModalOpen(false);
+    setBlockToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setIsModalOpen(false);
+    setBlockToDelete(null);
+  };
 
   const handleAddBlock = (block: Block) => {
     setBlocks((prevBlocks) => [...prevBlocks, block]);
@@ -51,6 +83,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
       <BlockList
         blocks={blocks}
         onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
       />
       {isAddModalOpen && (
         <AddBlockModal
@@ -73,6 +106,11 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
           onEdit={handleEditBlock}
         />
       )}
+      <DeleteModal
+        isOpen={isModalOpen}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 };
