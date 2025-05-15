@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Block } from '../../../models/blocks/block.model';
 import BlockItem from './blockItem';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { Draggable } from '../../../utils/dnd/Draggable';
 import { Droppable } from '../../../utils/dnd/Droppable';
 import EditButton from '../../atoms/editButton';
+import DeleteButton from '../../atoms/deleteButton';
 
 interface BlockListProps {
   blocks: Block[];
   onEdit: (values: any) => void;
+  onDelete: (id: number) => void;
 }
 
-const BlockList: React.FC<BlockListProps> = ({ blocks: initialBlocks, onEdit }) => {
-  const mappedBlocks = initialBlocks.map(block => ({
+const BlockList: React.FC<BlockListProps> = ({ blocks, onEdit, onDelete }) => {
+  const mappedBlocks = blocks.map(block => ({
     ...block,
     names: block.names.map(name =>
       typeof name === 'string' ? { value: name } : name
     ),
   }));
-
-  const [blocks, setBlocks] = useState<Block[]>(mappedBlocks);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -32,7 +32,6 @@ const BlockList: React.FC<BlockListProps> = ({ blocks: initialBlocks, onEdit }) 
         const newBlocks = [...blocks];
         const [moved] = newBlocks.splice(oldIndex, 1);
         newBlocks.splice(newIndex, 0, moved);
-        setBlocks(newBlocks);
       }
     }
   };
@@ -40,15 +39,16 @@ const BlockList: React.FC<BlockListProps> = ({ blocks: initialBlocks, onEdit }) 
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div className="space-y-4">
-        {blocks.map((block) => (
+        {mappedBlocks.map((block) => (
           <Droppable key={block.id} id={block.id}>
-          <div className="flex justify-between items-center">
-            <Draggable id={block.id}>
-              <BlockItem block={block} />
-            </Draggable>
-            <EditButton onClick={() => onEdit(block)} />
-          </div>
-        </Droppable>
+            <div className="flex justify-between items-center">
+              <Draggable id={block.id}>
+                <BlockItem block={block} />
+              </Draggable>
+              <EditButton onClick={() => onEdit(block)} />
+              <DeleteButton onClick={() => onDelete(block.id)} />
+            </div>
+          </Droppable>
         ))}
       </div>
     </DndContext>
