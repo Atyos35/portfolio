@@ -26,4 +26,9 @@ class BlockService
             ];
         }, $blocks);
     }
+
+    public function getNextBlockPosition(User $user): array
+    {
+        return ['next_position' => $this->blockRepository->findNextPositionForBlockByUser($user)];
+    }
 }

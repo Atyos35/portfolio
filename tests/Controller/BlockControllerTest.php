@@ -6,6 +6,7 @@ use App\Controller\BlockController;
 use App\Entity\Block;
 use App\Entity\User;
 use App\Form\BlockType;
+use App\Service\BlockService;
 use App\Provider\UserProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Form\FormErrorIterator;
 
 class BlockControllerTest extends TestCase
 {
@@ -48,6 +50,8 @@ class BlockControllerTest extends TestCase
         $form->expects($this->once())->method('handleRequest')->with($request);
         $form->expects($this->once())->method('submit')->with($expectedSubmitData);
         $form->expects($this->once())->method('isValid')->willReturn(true);
+        $form->method('getErrors')->willReturn(new FormErrorIterator($form, []));
+        //$form->method('getErrors')->willReturn(new \ArrayIterator());
 
         $formFactory = $this->createMock(FormFactoryInterface::class);
         $formFactory->method('create')->willReturn($form);
@@ -58,21 +62,30 @@ class BlockControllerTest extends TestCase
             ->willReturn(true);
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->once())->method('persist')->with($this->isInstanceOf(Block::class));
+        $entityManager->expects($this->once())->method('persist')->with($this->callback(function(Block $b) use (&$block) {
+            $block = $b;
+            return true;
+        }));
         $entityManager->expects($this->once())->method('flush');
 
         $userProvider = $this->createMock(UserProvider::class);
         $userProvider->method('getCurrentUser')->willReturn($user);
+
+        $blockService = $this->createMock(BlockService::class);
+        $blockService->method('getNextBlockPosition')->with($user)->willReturn(['next_position' => 5]);
 
         $controller = new BlockController();
         $container = $this->createMock(ContainerInterface::class);
         $container->method('get')->with('form.factory')->willReturn($formFactory);
         $controller->setContainer($container);
 
-        $response = $controller->new($request, $entityManager, $csrfManager, $userProvider);
+        $response = $controller->new($request, $entityManager, $csrfManager, $userProvider, $blockService);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+
+        $this->assertEquals(5, $block->getPosition());
+        $this->assertSame($user, $block->getUser());
     }
 
     public function testNewBlockInvalidCsrf(): void
@@ -113,12 +126,14 @@ class BlockControllerTest extends TestCase
         $userProvider = $this->createMock(UserProvider::class);
         $userProvider->method('getCurrentUser')->willReturn($user);
 
+        $blockService = $this->createMock(BlockService::class);
+
         $controller = new BlockController();
         $container = $this->createMock(ContainerInterface::class);
         $container->method('get')->with('form.factory')->willReturn($formFactory);
         $controller->setContainer($container);
 
-        $response = $controller->new($request, $entityManager, $csrfManager, $userProvider);
+        $response = $controller->new($request, $entityManager, $csrfManager, $userProvider, $blockService);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());

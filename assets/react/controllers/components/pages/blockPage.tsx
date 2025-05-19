@@ -74,6 +74,21 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
     setIsEditModalOpen(false);
   };
 
+  const handleReorderBlocks = async (updated: Block[]) => {
+  setBlocks(updated);
+    try {
+      await fetch('/block/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        body: JSON.stringify(
+          updated.map((b, idx) => ({ id: b.id, position: idx }))
+        ),
+      });
+    } catch (e) {
+      console.error('erreur lors de reclassement du block', e);
+    }
+  };
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">
@@ -84,6 +99,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
         blocks={blocks}
         onEdit={handleEditClick}
         onDelete={handleDeleteClick}
+        onReorder={handleReorderBlocks}
       />
       {isAddModalOpen && (
         <AddBlockModal
