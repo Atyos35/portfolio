@@ -45,4 +45,22 @@ class BlockServiceTest extends TestCase
             'names' => ['Symfony', 'API Platform', "NestJS"],
         ], $result[1]);
     }
+
+    public function testGetNextBlockPosition(): void
+    {
+        $user = $this->createMock(User::class);
+
+        $blockRepository = $this->createMock(BlockRepository::class);
+        $blockRepository
+            ->expects($this->once())
+            ->method('findNextPositionForBlockByUser')
+            ->with($user)
+            ->willReturn(5);
+
+        $blockService = new BlockService($blockRepository);
+
+        $result = $blockService->getNextBlockPosition($user);
+
+        $this->assertEquals(['next_position' => 5], $result);
+    }
 }

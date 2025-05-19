@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Block;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
 
 /**
  * @extends ServiceEntityRepository<Block>
@@ -24,9 +25,21 @@ class BlockRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('b')
             ->andWhere('b.user = :val')
             ->setParameter('val', $userId)
-            ->orderBy('b.id', 'ASC')
+            ->orderBy('b.position', 'ASC')
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    public function findNextPositionForBlockByUser(User $user): int
+    {
+        $maxPosition = $this->createQueryBuilder('b')
+            ->select('MAX(b.position)')
+            ->where('b.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return ((int) $maxPosition) + 1;
     }
 }

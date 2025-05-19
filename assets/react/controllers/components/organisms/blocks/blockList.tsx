@@ -9,37 +9,37 @@ import DeleteButton from '../../atoms/deleteButton';
 
 interface BlockListProps {
   blocks: Block[];
-  onEdit: (values: any) => void;
+  onEdit: (block: Block) => void;
   onDelete: (id: number) => void;
+  onReorder: (updated: Block[]) => void;   // 👈 nouveau
 }
 
-const BlockList: React.FC<BlockListProps> = ({ blocks, onEdit, onDelete }) => {
-  const mappedBlocks = blocks.map(block => ({
-    ...block,
-    names: block.names.map(name =>
-      typeof name === 'string' ? { value: name } : name
-    ),
+const BlockList: React.FC<BlockListProps> = ({ blocks, onEdit, onDelete, onReorder }) => {
+
+  const mappedBlocks = blocks.map(b => ({
+    ...b,
+    names: b.names.map(n => (typeof n === 'string' ? { value: n } : n)),
   }));
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    if (over && active.id !== over.id) {
-      const oldIndex = blocks.findIndex(block => block.id === active.id);
-      const newIndex = blocks.findIndex(block => block.id === over.id);
+    const oldIndex = blocks.findIndex(b => b.id === active.id);
+    const newIndex = blocks.findIndex(b => b.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
 
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newBlocks = [...blocks];
-        const [moved] = newBlocks.splice(oldIndex, 1);
-        newBlocks.splice(newIndex, 0, moved);
-      }
-    }
+    const updatedBlocks = [...blocks];
+    const [moved] = updatedBlocks.splice(oldIndex, 1);
+    updatedBlocks.splice(newIndex, 0, moved);
+    
+    onReorder(updatedBlocks);
   };
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div className="space-y-4">
-        {mappedBlocks.map((block) => (
+        {mappedBlocks.map(block => (
           <Droppable key={block.id} id={block.id}>
             <div className="flex justify-between items-center">
               <Draggable id={block.id}>

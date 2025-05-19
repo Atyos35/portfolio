@@ -26,7 +26,8 @@ final class BlockController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         CsrfTokenManagerInterface $csrfTokenManager,
-        UserProvider $userProvider): Response
+        UserProvider $userProvider,
+        BlockService $blockService): Response
     {
 
         $block = new Block();
@@ -55,6 +56,7 @@ final class BlockController extends AbstractController
                 return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
             }
             $block->setUser($user);
+            $block->setPosition($blockService->getNextBlockPosition($user)['next_position']);
             $entityManager->persist($block);
             $entityManager->flush();
         }else{
@@ -135,5 +137,22 @@ final class BlockController extends AbstractController
         return $this->json([
             'message' => 'Suppression réussie',
         ], Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/reorder', name: 'app_block_reorder', methods: ['POST'])]
+    public function reorder(Request $request, BlockRepository $blockRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $order = json_decode($request->getContent(), true);
+
+        foreach ($order as $item) {
+            $block = $blockRepository->find($item['id']);
+            if ($block) {
+                $block->setPosition($item['position']);
+            }
+        }
+
+        $entityManager->flush();
+
+        return new JsonResponse(['status' => 'ok']);
     }
 }
