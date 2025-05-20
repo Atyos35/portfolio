@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import * as Turbo from "@hotwired/turbo";
+import { User } from "../../../models/user/user.model";
 
 const schema = z.object({
     firstname: z.string(),
@@ -15,14 +16,20 @@ const schema = z.object({
 
 export type UserFormInput = z.infer<typeof schema>;
 
-export function useUserForm(action: string, csrfToken: string) {
+export function useUserForm(
+    action: string,
+    csrfToken: string,
+    initialValues: Partial<User> = {},
+    onSubmitSuccess?: (data: User) => void
+  ) {
     const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-        reset,
-    } = useForm({
-        resolver: zodResolver(schema),
+      register,
+      handleSubmit,
+      formState: { errors, isSubmitting },
+      reset,
+    } = useForm<UserFormInput>({
+      resolver: zodResolver(schema),
+      defaultValues: initialValues,
     });
 
     const onSubmit = async (data: UserFormInput) => {
@@ -42,9 +49,13 @@ export function useUserForm(action: string, csrfToken: string) {
                   })
             });
 
-            const res = await response.json();
+            const result: User = await response.json();
             if (!response.ok) {
-                throw new Error(res.message || "Erreur lors de la mise à jour");
+                throw new Error("Erreur lors de la mise à jour");
+            }
+
+            if (onSubmitSuccess) {
+                onSubmitSuccess(result);
             }
 
             Turbo.visit("/");

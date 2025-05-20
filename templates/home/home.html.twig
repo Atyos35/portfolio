@@ -6,9 +6,8 @@
     <div class="flex flex-col lg:flex-row gap-8 p-8">
 
         <div class="flex flex-col gap-8 w-full lg:w-2/3">
-            <div {{ react_component('user/userGet',
+            <div {{ react_component('components/pages/userPage',
             {user: user,
-            editUserAction: path('app_user_edit', { id: app.user.id }),
             csrfToken: csrf_token('user_form') }) }}></div>
 
             <div {{ react_component('components/pages/experiencePage', {
