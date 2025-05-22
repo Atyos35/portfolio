@@ -1,5 +1,7 @@
-import { Block } from "../../../models/blocks/block.model";
-import { useBlockForm } from "./useBlockForm";
+import React from 'react';
+import { useBlockForm } from './useBlockForm';
+import { Block } from '../../../models/blocks/block.model';
+import SaveButton from '../saveButton';
 import AddButton from '../../atoms/addButton';
 import DeleteButton from '../../atoms/deleteButton';
 
@@ -25,35 +27,35 @@ export default function BlockForm({
     fields,
     append,
     remove,
-  } = useBlockForm(
-    action,
-    csrfToken,
-    initialValues,
-    (data: Block) => {
-      if (onSubmit) {
-        onSubmit(data);
-      }
-    }
-  );
+  } = useBlockForm(action, csrfToken, initialValues, (data: Block) => {
+    if (onSubmit) onSubmit(data);
+  });
 
   return (
-    <form onSubmit={handleSubmit(submitForm)} className="space-y-4">
+    <form
+      onSubmit={handleSubmit(submitForm)}
+      className="space-y-4 bg-transparent text-gray-900 p-4 rounded-lg"
+    >
       <input type="hidden" name="_token" value={csrfToken} />
 
-      <div>
-        <label>Titre</label>
-        <input type="text" {...register("title")} required />
-        {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+      <div className="flex flex-col">
+        <label htmlFor="title" className="mb-1">Titre</label>
+        <input
+          id="title"
+          {...register("title")}
+          className="border border-gray-300 rounded px-3 py-2 bg-white text-gray-900"
+        />
+        {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title.message}</p>}
       </div>
 
-      <div>
+      <div className="space-y-2">
+        <label htmlFor="title" className="mb-1">Compétences</label>
         {fields.map((field, index) => (
-          <div key={field.id} className="flex items-center space-x-2">
+          <div key={field.id} className="flex items-center gap-2">
             <input
-              type="text"
               {...register(`names.${index}.value`)}
               defaultValue={field.value}
-              required
+              className="border border-gray-300 rounded px-3 py-2 bg-white text-gray-900 flex-1"
             />
             {fields.length > 1 && (
               <DeleteButton onClick={() => remove(index)} />
@@ -63,9 +65,7 @@ export default function BlockForm({
         <AddButton onClick={() => append({ value: "" })} />
       </div>
 
-      <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-        {isSubmitting ? "Enregistrement..." : "Enregistrer"}
-      </button>
+      <SaveButton isSubmitting={isSubmitting} />
     </form>
   );
 }
