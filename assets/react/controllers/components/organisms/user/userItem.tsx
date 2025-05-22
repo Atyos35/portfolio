@@ -11,11 +11,11 @@ const UserItem: React.FC<UserItemProps> = ({ user, onEdit }) => {
     console.log('onEdit is:', typeof onEdit);
 
   return (
-    <div className="p-4 border rounded shadow-sm flex justify-between items-center">
+    <div className="p-4 border rounded-2xl border-gray-300 shadow-sm flex justify-between items-center">
       <div>
         <div className="flex items-center space-x-4 mb-2">
           <img
-            className="w-14 h-14 rounded-full shadow"
+            className="w-20 h-20 rounded-full shadow"
             src="/images/pp.jpg"
             alt="Profile"
           />
@@ -30,9 +30,9 @@ const UserItem: React.FC<UserItemProps> = ({ user, onEdit }) => {
         </div>
         <div className="text-sm text-gray-700 space-y-1">
           <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>City:</strong> {user.city}</p>
-          <p><strong>Age:</strong> {user.age} years</p>
-          <p><strong>Phone:</strong> {user.phone}</p>
+          <p><strong>Ville:</strong> {user.city}</p>
+          <p><strong>Age:</strong> {user.age} ans</p>
+          <p><strong>Tel:</strong> {user.phone}</p>
         </div>
       </div>
 

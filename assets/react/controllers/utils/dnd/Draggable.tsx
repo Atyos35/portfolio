@@ -12,6 +12,7 @@ export function Draggable({ id, children }: DraggableProps) {
 
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
+    width: '100%',
   };
 
   return (

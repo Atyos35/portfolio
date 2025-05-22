@@ -1,15 +1,21 @@
+const AddIcon = require('../../../../icons/addIcon.png');
+
 type Props = {
-    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    onClick: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
 
 export default function AddButton({ onClick }: Props) {
     return (
         <span
             onClick={onClick}
-            className="text-green-600 hover:text-green-800 transition-colors"
+            className="ml-3 cursor-pointer"
             title="Ajouter"
         >
-            ➕
+            <img 
+                src={AddIcon} 
+                alt="Ajouter" 
+                className="w-5 h-5 align-middle" 
+            />
         </span>
     );
 }

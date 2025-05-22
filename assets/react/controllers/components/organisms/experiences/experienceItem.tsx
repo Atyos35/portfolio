@@ -16,7 +16,7 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
   onDelete,
 }) => {
   return (
-    <div className="p-4 border rounded shadow-sm flex justify-between items-center">
+    <div className="p-4 border rounded-2xl border-gray-300 shadow-sm flex justify-between items-center">
       <div>
         <h3 className="text-lg font-semibold">{experience.name}</h3>
         <p className="text-sm text-gray-600">
