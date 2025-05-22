@@ -90,10 +90,10 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">
-        Mes expériences
+      <div className="flex items-center mb-6">
+        <h1 className="text-2xl font-bold">Mes expériences</h1>
         <AddButton onClick={() => setIsAddModalOpen(true)} />
-      </h1>
+      </div>
       <ExperienceList
         experiences={experiences}
         onDeleted={handleDeleteClick}

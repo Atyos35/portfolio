@@ -41,12 +41,16 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, onEdit, onDelete, onReord
       <div className="space-y-4">
         {mappedBlocks.map(block => (
           <Droppable key={block.id} id={block.id}>
-            <div className="flex justify-between items-center">
-              <Draggable id={block.id}>
-                <BlockItem block={block} />
-              </Draggable>
-              <EditButton onClick={() => onEdit(block)} />
-              <DeleteButton onClick={() => onDelete(block.id)} />
+            <div className="flex items-center justify-between gap-4 w-full">
+              <div className="flex-1">
+                <Draggable id={block.id}>
+                  <BlockItem block={block} />
+                </Draggable>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <EditButton onClick={() => onEdit(block)} />
+                <DeleteButton onClick={() => onDelete(block.id)} />
+              </div>
             </div>
           </Droppable>
         ))}

@@ -29,7 +29,6 @@ const UserPage: React.FC<UserPageProps> = ({ user: initialUser, csrfToken }) => 
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Profil utilisateur</h1>
       <UserItem user={user} onEdit={handleEditClick} />
 
       {isEditModalOpen && (

@@ -89,10 +89,10 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">
-        Mes formations
+      <div className="flex items-center mb-6">
+        <h1 className="text-2xl font-bold">Mes formations</h1>
         <AddButton onClick={() => setIsAddModalOpen(true)} />
-      </h1>
+      </div>
       <TrainingList
         trainings={trainings}
         onDeleted={handleDeleteClick}
