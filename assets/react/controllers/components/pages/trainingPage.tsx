@@ -109,7 +109,7 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
       <DeleteModal
         isOpen={isModalOpen}
         onConfirm={confirmDelete}
-        onCancel={cancelDelete}
+        onClose={cancelDelete}
       />
       {isEditModalOpen && trainingToEdit && (
         <EditTrainingModal

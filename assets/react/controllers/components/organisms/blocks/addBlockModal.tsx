@@ -17,8 +17,7 @@ export default function AddBlockModal({
   onAdd,
 }: AddBlockModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">Ajouter un block de compétences</h2>
+    <Modal isOpen={isOpen} onClose={onClose} title="Ajouter un block">
       <BlockForm
         initialValues={emptyBlock}
         action="/block/new"

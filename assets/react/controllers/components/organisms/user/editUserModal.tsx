@@ -19,8 +19,7 @@ export default function EditUserModal({
   onEdit,
 }: EditUserModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">Modifier l'utilisateur</h2>
+    <Modal isOpen={isOpen} onClose={onClose} title="Modifier vos informations">
       <UserForm
         initialValues={initialValues}
         action={`/user/${initialValues.id}/edit`}

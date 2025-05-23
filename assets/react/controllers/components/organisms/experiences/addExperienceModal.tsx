@@ -17,8 +17,7 @@ export default function AddExperienceModal({
   onAdd,
 }: AddExperienceModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">Ajouter une expérience</h2>
+    <Modal isOpen={isOpen} onClose={onClose} title="Ajouter une expérience">
       <ExperienceForm
         initialValues={emptyExperience}
         action="/experience/new"

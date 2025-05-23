@@ -36,8 +36,6 @@ export default function UserForm({
     >
       <input type="hidden" name="_token" value={csrfToken} />
 
-      <h2 className="text-lg font-semibold">Informations personnelles</h2>
-
       <div className="flex flex-col">
         <label htmlFor="firstname" className="mb-1">Prénom</label>
         <input
