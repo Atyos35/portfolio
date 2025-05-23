@@ -14,7 +14,7 @@ export default function EditButton({ onClick }: Props) {
             <img 
                 src={EditIcon} 
                 alt="Modifier" 
-                className="w-5 h-5 align-middle" 
+                className="w-5 h-5 min-w-[1.25rem] min-h-[1.25rem] align-middle" 
             />
         </span>
     );

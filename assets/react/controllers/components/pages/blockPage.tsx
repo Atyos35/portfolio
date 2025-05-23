@@ -92,7 +92,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
   return (
     <div className="p-8">
       <div className="flex items-center mb-6">
-        <h1 className="text-2xl font-bold">Mes Compétences</h1>
+        <h1 className="text-2xl font-bold whitespace-nowrap">Mes Compétences</h1>
         <AddButton onClick={() => setIsAddModalOpen(true)} />
       </div>
       <BlockList
