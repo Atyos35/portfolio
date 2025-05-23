@@ -14,7 +14,7 @@ export default function DeleteButton({ onClick }: Props) {
             <img 
                 src={DeleteIcon} 
                 alt="Supprimer" 
-                className="w-5 h-5 align-middle" 
+                className="w-5 h-5 min-w-[1.25rem] min-h-[1.25rem] align-middle" 
             />
         </span>
     );
