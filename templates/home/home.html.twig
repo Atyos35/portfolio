@@ -1,3 +1,4 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Accueil{% endblock %}
@@ -8,43 +9,16 @@
 {% endblock %}
 
 {% block body %}
-<div class="min-h-screen flex flex-col">
-    <main class="flex-1 w-full py-8 px-2 sm:px-4 lg:px-0">
-        <div class="max-w-6xl mx-auto border border-gray-300 bg-white rounded-2xl p-6 lg:p-8 section-background">
-
-            <section id="user">
-                <div {{ react_component('components/pages/userPage', {
-                    user: user,
-                    csrfToken: csrf_token('user_form')
-                }) }}></div>
-            </section>
-
-            <div class="flex flex-col lg:flex-row gap-8">
-                <div class="flex flex-col gap-8 w-full lg:w-2/3">
-                    <section id="experiences">
-                        <div {{ react_component('components/pages/experiencePage', {
-                            experiences: experiences,
-                            csrfToken: csrf_token('experience_form')
-                        }) }}></div>
-                    </section>
-
-                    <section id="formations">
-                        <div {{ react_component('components/pages/trainingPage', {
-                            trainings: trainings,
-                            csrfToken: csrf_token('training_form')
-                        }) }}></div>
-                    </section>
-                </div>
-
-                <aside class="w-full lg:w-1/3 max-w-md">
-                    <div {{ react_component('components/pages/blockPage', {
-                        blocks: blocks,
-                        csrfToken: csrf_token('block_form')
-                    }) }}></div>
-                </aside>
-            </div>
-            
-        </div>
-    </main>
-</div>
+    <div {{ react_component('components/pages/homePage', {
+        user: user,
+        experiences: experiences,
+        trainings: trainings,
+        blocks: blocks,
+        csrfTokens: {
+            user: csrf_token('user_form'),
+            experience: csrf_token('experience_form'),
+            training: csrf_token('training_form'),
+            block: csrf_token('block_form')
+        }
+    }) }}></div>
 {% endblock %}
