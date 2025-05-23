@@ -8,7 +8,6 @@ interface UserItemProps {
 };
 
 const UserItem: React.FC<UserItemProps> = ({ user, onEdit }) => {
-    console.log('onEdit is:', typeof onEdit);
 
   return (
     <div className="p-4 border rounded-2xl border-gray-300 shadow-sm flex justify-between items-center">
