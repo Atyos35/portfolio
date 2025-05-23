@@ -110,7 +110,7 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
       <DeleteModal
         isOpen={isModalOpen}
         onConfirm={confirmDelete}
-        onCancel={cancelDelete}
+        onClose={cancelDelete}
       />
       {isEditModalOpen && experienceToEdit && (
         <EditExperienceModal

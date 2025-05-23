@@ -1,25 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 type ModalProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    children: React.ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  title?: string;
 };
 
-export default function Modal({ isOpen, onClose, children }: ModalProps) {
-    if (!isOpen) return null;
+export default function Modal({ isOpen, onClose, children, title = "Modal" }: ModalProps) {
+  const [shouldRender, setShouldRender] = useState(isOpen);
 
-    return (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-                <button
-                    onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 cursor-pointer"
-                >
-                    ✕
-                </button>
-                {children}
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setShouldRender(false);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
+  return (
+    <AnimatePresence>
+      {shouldRender && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.div
+            className="w-11/12 max-w-xl rounded-2xl shadow-md section-background relative flex flex-col overflow-hidden"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <div className="text-black px-6 py-4 flex justify-between items-center border-b border-gray-300 bg-white">
+              <h2 className="text-lg font-semibold">{title}</h2>
+              <button
+                onClick={handleClose}
+                className="text-black hover:text-gray-500 text-xl cursor-pointer"
+              >
+                ✕
+              </button>
             </div>
-        </div>
-    );
+
+            <div className="p-6 overflow-y-auto max-h-[80vh]">
+              {children}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }

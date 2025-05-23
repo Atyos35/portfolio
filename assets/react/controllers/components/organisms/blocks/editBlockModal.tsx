@@ -19,8 +19,7 @@ export default function EditBlockModal({
   onEdit,
 }: EditBlockModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">Modifier un Block</h2>
+    <Modal isOpen={isOpen} onClose={onClose} title="Modifier un block">
       <BlockForm
         initialValues={initialValues}
         action={`/block/${initialValues.id}/edit`}

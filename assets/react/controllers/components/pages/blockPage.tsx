@@ -138,7 +138,7 @@ const handleReorderBlocks = async (updated: Block[]) => {
         <DeleteModal
           isOpen={isModalOpen}
           onConfirm={confirmDelete}
-          onCancel={cancelDelete}
+          onClose={cancelDelete}
         />
       </div>
     </div>

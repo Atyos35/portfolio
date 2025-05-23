@@ -19,8 +19,7 @@ export default function EditExperienceModal({
   onEdit,
 }: EditExperienceModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">Modifier une expérience</h2>
+    <Modal isOpen={isOpen} onClose={onClose} title="Modifier une expérience">
       <ExperienceForm
         initialValues={initialValues}
         action={`/experience/${initialValues.id}/edit`}

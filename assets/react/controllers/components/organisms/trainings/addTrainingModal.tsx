@@ -17,8 +17,7 @@ export default function AddTrainingModal({
   onAdd,
 }: AddTrainingModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">Ajouter une expérience</h2>
+    <Modal isOpen={isOpen} onClose={onClose} title="Ajouter une formation">
       <TrainingForm
         initialValues={emptyTraining}
         action="/training/new"
