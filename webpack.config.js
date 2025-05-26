@@ -36,7 +36,7 @@ Encore
     .copyFiles({
         from: './assets/icons',
         to: 'icons/[path][name].[hash:8].[ext]',
-        pattern: /\.(png|jpg|jpeg|svg)$/
+        pattern: /\.(png|jpg|jpeg|svg|gif)$/
     })
     .copyFiles({
         from: './assets/images',
