@@ -8,30 +8,26 @@ type UserFormProps = {
   initialValues: UserFormInput;
   action: string;
   csrfToken: string;
-  onSubmit?: (values: User) => void;
+  onSubmitSuccess?: (values: User) => void;
 };
 
 export default function UserForm({
   action,
   csrfToken,
   initialValues,
-  onSubmit,
+  onSubmitSuccess,
 }: UserFormProps) {
   const {
     register,
     handleSubmit,
-    onSubmit: submitForm,
+    onSubmit,
     errors,
     isSubmitting,
-  } = useUserForm(action, csrfToken, initialValues, (data: User) => {
-    if (onSubmit) {
-      onSubmit(data);
-    }
-  });
+  } = useUserForm(action, csrfToken, initialValues, onSubmitSuccess);
 
   return (
     <form
-      onSubmit={handleSubmit(submitForm)}
+      onSubmit={handleSubmit(onSubmit)}
       className="space-y-4 bg-transparent text-gray-900 p-4 rounded-lg"
     >
       <input type="hidden" name="_token" value={csrfToken} />

@@ -9,6 +9,7 @@ interface EditUserModalProps {
   csrfToken: string;
   initialValues: User;
   onEdit: (values: User) => void;
+  editUserAction: string;
 }
 
 export default function EditUserModal({
@@ -24,8 +25,8 @@ export default function EditUserModal({
         initialValues={initialValues}
         action={`/user/${initialValues.id}/edit`}
         csrfToken={csrfToken}
-        onSubmit={(values) => {
-          onEdit(values);
+        onSubmitSuccess={(updatedUser) => {
+          onEdit(updatedUser);
           onClose();
         }}
       />

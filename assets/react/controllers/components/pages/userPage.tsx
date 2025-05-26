@@ -7,19 +7,23 @@ interface UserPageProps {
   user: User;
   csrfToken: string;
   editUserAction: string;
+  onUserUpdate: (user: User) => void;
 }
 
-const UserPage: React.FC<UserPageProps> = ({ user: initialUser, csrfToken }) => {
-  const [user, setUser] = useState<User>(initialUser);
+const UserPage: React.FC<UserPageProps> = ({
+  user,
+  csrfToken,
+  editUserAction,
+  onUserUpdate,
+}) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const handleEditClick = (user: User) => {
-    setUser(user);
+  const handleEditClick = () => {
     setIsEditModalOpen(true);
   };
 
   const handleEditUser = (updatedUser: User) => {
-    setUser(updatedUser);
+    onUserUpdate(updatedUser);
     setIsEditModalOpen(false);
   };
 
@@ -38,6 +42,7 @@ const UserPage: React.FC<UserPageProps> = ({ user: initialUser, csrfToken }) => 
           csrfToken={csrfToken}
           initialValues={user}
           onEdit={handleEditUser}
+          editUserAction={editUserAction}
         />
       )}
     </div>

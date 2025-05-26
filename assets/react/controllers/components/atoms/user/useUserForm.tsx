@@ -46,19 +46,13 @@ export function useUserForm(
                     ...data,
                     _method: 'PUT',
                     _csrf_token: csrfToken,
-                  })
+                }),
             });
 
             const result: User = await response.json();
-            if (!response.ok) {
-                throw new Error("Erreur lors de la mise à jour");
-            }
+            if (!response.ok) throw new Error("Erreur lors de la mise à jour");
 
-            if (onSubmitSuccess) {
-                onSubmitSuccess(result);
-            }
-
-            Turbo.visit("/");
+            onSubmitSuccess?.(result);
         } catch (error) {
             console.error(error);
         }
