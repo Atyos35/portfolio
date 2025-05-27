@@ -8,13 +8,13 @@ export default function EditButton({ onClick }: Props) {
     return (
         <span
             onClick={onClick}
-            className="ml-3 cursor-pointer"
+            className="cursor-pointer"
             title="Modifier"
         >
             <img 
                 src={EditIcon} 
                 alt="Modifier" 
-                className="w-5 h-5 min-w-[1.25rem] min-h-[1.25rem] align-middle" 
+                className="w-5 h-5 rounded-full shadow" 
             />
         </span>
     );

@@ -4,7 +4,6 @@ import ExperiencePage from './experiencePage';
 import TrainingPage from './trainingPage';
 import BlockPage from './blockPage';
 import { motion, AnimatePresence } from 'framer-motion';
-
 const Loader = require('../../../../images/waiter.gif');
 
 type HomePageProps = {
@@ -30,6 +29,7 @@ export default function HomePage({
   editUserAction
 }: HomePageProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(user);
 
   useEffect(() => {
     const delay = setTimeout(() => {
@@ -62,7 +62,7 @@ export default function HomePage({
         >
           <div className="max-w-6xl mx-auto border border-gray-300 bg-white rounded-2xl p-6 lg:p-8 section-background">
             <div className="flex flex-col gap-8">
-              <UserPage editUserAction={editUserAction} user={user} csrfToken={csrfTokens.user} />
+              <UserPage onUserUpdate={setCurrentUser} editUserAction={editUserAction} user={currentUser} csrfToken={csrfTokens.user} />
               <div className="flex flex-col lg:flex-row gap-8">
                 <div className="flex flex-col gap-8 w-full lg:w-2/3">
                   <ExperiencePage experiences={experiences} csrfToken={csrfTokens.experience} />
