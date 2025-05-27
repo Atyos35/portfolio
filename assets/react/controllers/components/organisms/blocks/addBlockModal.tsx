@@ -22,7 +22,7 @@ export default function AddBlockModal({
         initialValues={emptyBlock}
         action="/block/new"
         csrfToken={csrfToken}
-        onSubmit={(values) => {
+        onSubmitSuccess={(values) => {
           onAdd(values);
           onClose();
         }}

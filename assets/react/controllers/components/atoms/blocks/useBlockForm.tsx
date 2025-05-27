@@ -52,14 +52,10 @@ export function useBlockForm(
         }),
       });
 
-      const result: Block = await response.json();
+      const result = await response.json();
+            if (!response.ok) throw new Error("Erreur lors de la mise à jour");
 
-      if (!response.ok) {
-        throw new Error("Erreur lors de la soumission du formulaire");
-      }
-
-      onSubmitSuccess?.(result);
-      Turbo.visit("/");
+        onSubmitSuccess?.(result.block);
     } catch (error) {
       console.error(error);
     }
