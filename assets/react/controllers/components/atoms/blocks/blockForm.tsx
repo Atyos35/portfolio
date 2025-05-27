@@ -9,14 +9,14 @@ type BlockFormProps = {
   initialValues: Block;
   action: string;
   csrfToken: string;
-  onSubmit?: (values: Block) => void;
+  onSubmitSuccess?: (values: Block) => void;
 };
 
 export default function BlockForm({
   initialValues,
   action,
   csrfToken,
-  onSubmit,
+  onSubmitSuccess,
 }: BlockFormProps) {
   const {
     register,
@@ -27,9 +27,7 @@ export default function BlockForm({
     fields,
     append,
     remove,
-  } = useBlockForm(action, csrfToken, initialValues, (data: Block) => {
-    if (onSubmit) onSubmit(data);
-  });
+  } = useBlockForm(action, csrfToken, initialValues, onSubmitSuccess);
 
   return (
     <form

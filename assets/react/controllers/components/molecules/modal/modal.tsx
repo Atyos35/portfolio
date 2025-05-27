@@ -14,6 +14,8 @@ export default function Modal({ isOpen, onClose, children, title = "Modal" }: Mo
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
+    } else {
+      setTimeout(() => setShouldRender(false), 300);
     }
   }, [isOpen]);
 

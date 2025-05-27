@@ -61,17 +61,10 @@ export function useExperienceForm(
           }),
         });
   
-        const result: Experience = await response.json();
-  
-        if (!response.ok) {
-          throw new Error("Erreur lors de la soumission du formulaire");
-        }
+        const result = await response.json();
+            if (!response.ok) throw new Error("Erreur lors de la mise à jour");
 
-        if (onSubmitSuccess) {
-          onSubmitSuccess(result);
-        }
-  
-        Turbo.visit("/");
+        onSubmitSuccess?.(result.experience);
       } catch (error) {
         console.error(error);
       }

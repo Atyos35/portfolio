@@ -31,6 +31,8 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [trainingToEdit, setTrainingToEdit] = useState<Training | null>(null);
   const [trainingToDelete, setTrainingToDelete] = useState<number | null>(null);
+  const [editedTrainingId, setEditedTrainingId] = useState<number | null>(null);
+  const [flashSuccessId, setFlashSuccessId] = useState<number | null>(null);
 
   const handleDeleteClick = (id: number) => {
     setTrainingToDelete(id);
@@ -46,6 +48,8 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
           entityName: "la formation",
         });
         setTrainings((prev) => prev.filter((training) => training.id !== trainingToDelete));
+        setIsModalOpen(false);
+        setTrainingToDelete(null);
       } catch (error: any) {
         console.error(error.message);
         alert("Erreur lors de la suppression : " + error.message);
@@ -79,6 +83,13 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
           )
         )
       );
+      setIsEditModalOpen(false);
+      setTrainingToEdit(null);
+
+      setEditedTrainingId(updatedTraining.id);
+      setFlashSuccessId(updatedTraining.id);
+      setTimeout(() => setFlashSuccessId(null), 1000);
+      setTimeout(() => setEditedTrainingId(null), 2000);
     };
 
   const cancel = () => {
@@ -97,6 +108,8 @@ const TrainingPage: React.FC<TrainingPageProps> = ({ trainings: initialTrainings
         trainings={trainings}
         onDeleted={handleDeleteClick}
         onEdit={handleEditClick}
+        editedTrainingId={editedTrainingId}
+        flashSuccessId={flashSuccessId}
       />
       {isAddModalOpen && (
         <AddTrainingModal

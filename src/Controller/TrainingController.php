@@ -61,6 +61,16 @@ final class TrainingController extends AbstractController
 
         return $this->json([
             'message' => 'Création réussie',
+            'training' => [
+                'id' => $training->getId(),
+                'name' => $training->getName(),
+                'start_date' => $training->getStartDate(),
+                'end_date' => $training->getEndDate(),
+                'description' => $training->getDescription(),
+                'duration' => $training->getDuration(),
+                'school' => $training->getSchool(),
+                'city' => $training->getCity(),
+            ]
         ], Response::HTTP_CREATED);
     }
 
@@ -101,7 +111,17 @@ final class TrainingController extends AbstractController
         }
 
         return $this->json([
-            'message' => 'Édition réussie',
+            'message' => 'Edition réussie',
+            'training' => [
+                'id' => $training->getId(),
+                'name' => $training->getName(),
+                'start_date' => $training->getStartDate(),
+                'end_date' => $training->getEndDate(),
+                'description' => $training->getDescription(),
+                'duration' => $training->getDuration(),
+                'school' => $training->getSchool(),
+                'city' => $training->getCity(),
+            ]
         ], Response::HTTP_CREATED);
     }
 

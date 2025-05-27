@@ -7,14 +7,14 @@ type TrainingFormProps = {
   initialValues: Training;
   action: string;
   csrfToken: string;
-  onSubmit?: (values: Training) => void;
+  onSubmitSuccess?: (values: Training) => void;
 };
 
 export default function TrainingForm({
   initialValues,
   action,
   csrfToken,
-  onSubmit,
+  onSubmitSuccess,
 }: TrainingFormProps) {
   const {
     register,
@@ -22,9 +22,7 @@ export default function TrainingForm({
     onSubmit: submitForm,
     errors,
     isSubmitting,
-  } = useTrainingForm(action, csrfToken, initialValues, (data: Training) => {
-    if (onSubmit) onSubmit(data);
-  });
+  } = useTrainingForm(action, csrfToken, initialValues, onSubmitSuccess);
 
   return (
     <form

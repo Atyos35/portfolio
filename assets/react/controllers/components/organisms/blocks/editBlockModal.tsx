@@ -24,8 +24,8 @@ export default function EditBlockModal({
         initialValues={initialValues}
         action={`/block/${initialValues.id}/edit`}
         csrfToken={csrfToken}
-        onSubmit={(values) => {
-          onEdit(values);
+        onSubmitSuccess={(updatedBlock) => {
+          onEdit(updatedBlock);
           onClose();
         }}
       />

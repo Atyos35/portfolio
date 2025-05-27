@@ -20,16 +20,31 @@ class UserControllerTest extends TestCase
 {
     public function testEditUserSuccess(): void
     {
-        $user = new User();
-        $user->setEmail('original@example.com');
+        $user = $this->createMock(User::class);
+        $user->method('getId')->willReturn(1);
+        $user->method('getEmail')->willReturn('edited@example.com');
+        $user->method('getFirstname')->willReturn('John');
+        $user->method('getLastname')->willReturn('Doe');
+        $user->method('getJob')->willReturn('Developer');
+        $user->method('getLinkedin')->willReturn('https://linkedin.com/in/johndoe');
+        $user->method('getCity')->willReturn('Paris');
+        $user->method('getPhone')->willReturn('0123456789');
+        $user->method('getAge')->willReturn('30');
 
         $requestData = [
             '_csrf_token' => 'valid_token',
             'email' => 'edited@example.com',
+            'firstname' => 'John',
+            'lastname' => 'Doe',
+            'job' => 'Developer',
+            'linkedin' => 'https://linkedin.com/in/johndoe',
+            'city' => 'Paris',
+            'phone' => '0123456789',
+            'age' => '30',
         ];
 
         $request = new Request([], [], [], [], [], [], json_encode($requestData));
-        
+
         $form = $this->createMock(FormInterface::class);
         $form->expects($this->once())->method('handleRequest')->with($request);
         $form->expects($this->once())->method('submit')->with($requestData);
@@ -56,5 +71,22 @@ class UserControllerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+
+        $expectedJson = [
+            'message' => 'Édition réussie',
+            'user' => [
+                'id' => 1,
+                'email' => 'edited@example.com',
+                'firstname' => 'John',
+                'lastname' => 'Doe',
+                'job' => 'Developer',
+                'linkedin' => 'https://linkedin.com/in/johndoe',
+                'city' => 'Paris',
+                'phone' => '0123456789',
+                'age' => '30',
+            ]
+        ];
+
+        $this->assertJsonStringEqualsJsonString(json_encode($expectedJson), $response->getContent());
     }
 }

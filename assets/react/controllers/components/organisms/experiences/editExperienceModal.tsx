@@ -24,8 +24,8 @@ export default function EditExperienceModal({
         initialValues={initialValues}
         action={`/experience/${initialValues.id}/edit`}
         csrfToken={csrfToken}
-        onSubmit={(values) => {
-          onEdit(values);
+        onSubmitSuccess={(updatedExperience) => {
+          onEdit(updatedExperience);
           onClose();
         }}
       />

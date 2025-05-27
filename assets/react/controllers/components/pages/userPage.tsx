@@ -7,20 +7,33 @@ interface UserPageProps {
   user: User;
   csrfToken: string;
   editUserAction: string;
+  onUserUpdate: (user: User) => void;
 }
 
-const UserPage: React.FC<UserPageProps> = ({ user: initialUser, csrfToken }) => {
-  const [user, setUser] = useState<User>(initialUser);
+const UserPage: React.FC<UserPageProps> = ({
+  user,
+  csrfToken,
+  editUserAction,
+  onUserUpdate,
+}) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [localUser, setLocalUser] = useState(user);
+  const [isFlashSuccess, setIsFlashSuccess] = useState(false);
+  const [showCheckIcon, setShowCheckIcon] = useState(false);
 
-  const handleEditClick = (user: User) => {
-    setUser(user);
+  const handleEditClick = () => {
     setIsEditModalOpen(true);
   };
 
   const handleEditUser = (updatedUser: User) => {
-    setUser(updatedUser);
+    setLocalUser(updatedUser);
+    onUserUpdate(updatedUser);
     setIsEditModalOpen(false);
+
+    setIsFlashSuccess(true);
+    setShowCheckIcon(true);
+    setTimeout(() => setIsFlashSuccess(false), 1000);
+    setTimeout(() => setShowCheckIcon(false), 2000);
   };
 
   const cancel = () => {
@@ -29,15 +42,21 @@ const UserPage: React.FC<UserPageProps> = ({ user: initialUser, csrfToken }) => 
 
   return (
     <div className="p-8">
-      <UserItem user={user} onEdit={handleEditClick} />
+      <UserItem
+        user={localUser}
+        onEdit={handleEditClick}
+        showCheckIcon={showCheckIcon}
+        flash={isFlashSuccess}
+      />
 
       {isEditModalOpen && (
         <EditUserModal
           isOpen={isEditModalOpen}
           onClose={cancel}
           csrfToken={csrfToken}
-          initialValues={user}
+          initialValues={localUser}
           onEdit={handleEditUser}
+          editUserAction={editUserAction}
         />
       )}
     </div>

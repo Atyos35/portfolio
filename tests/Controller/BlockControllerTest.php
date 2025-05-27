@@ -34,24 +34,22 @@ class BlockControllerTest extends TestCase
             'names' => [
                 ['value' => 'PHP'],
                 ['value' => 'JavaScript'],
-                ['value' => 'Python']
+                ['value' => 'Python'],
             ],
+        ];
+
+        $expectedSubmittedData = [
+            '_csrf_token' => 'valid_token',
+            'title' => 'Langages',
+            'names' => ['PHP', 'JavaScript', 'Python'],
         ];
 
         $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
-        $expectedSubmitData = [
-            '_csrf_token' => 'valid_token',
-            'title' => 'Langages',
-            'names' => ['PHP', 'JavaScript', 'Python']
-        ];
-
         $form = $this->createMock(FormInterface::class);
         $form->expects($this->once())->method('handleRequest')->with($request);
-        $form->expects($this->once())->method('submit')->with($expectedSubmitData);
+        $form->expects($this->once())->method('submit')->with($expectedSubmittedData);
         $form->expects($this->once())->method('isValid')->willReturn(true);
-        $form->method('getErrors')->willReturn(new FormErrorIterator($form, []));
-        //$form->method('getErrors')->willReturn(new \ArrayIterator());
 
         $formFactory = $this->createMock(FormFactoryInterface::class);
         $formFactory->method('create')->willReturn($form);
@@ -62,7 +60,7 @@ class BlockControllerTest extends TestCase
             ->willReturn(true);
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->once())->method('persist')->with($this->callback(function(Block $b) use (&$block) {
+        $entityManager->expects($this->once())->method('persist')->with($this->callback(function (Block $b) use (&$block, $user) {
             $block = $b;
             return true;
         }));
@@ -84,9 +82,12 @@ class BlockControllerTest extends TestCase
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
 
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('Création réussie', $data['message']);
         $this->assertEquals(5, $block->getPosition());
         $this->assertSame($user, $block->getUser());
     }
+
 
     public function testNewBlockInvalidCsrf(): void
     {
@@ -154,8 +155,11 @@ class BlockControllerTest extends TestCase
             ],
         ];
 
-        $expectedSubmittedData = $requestData;
-        $expectedSubmittedData['names'] = ['Symfony', 'API Platform', 'NestJS'];
+        $expectedSubmittedData = [
+            '_csrf_token' => 'valid_token',
+            'title' => 'frameworks',
+            'names' => ['Symfony', 'API Platform', 'NestJS'],
+        ];
 
         $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
@@ -188,7 +192,11 @@ class BlockControllerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('Édition réussie', $data['message']);
     }
+
 
     public function testDeleteBlockSuccess(): void
     {

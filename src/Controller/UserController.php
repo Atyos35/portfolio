@@ -54,7 +54,17 @@ final class UserController extends AbstractController
 
         return $this->json([
             'message' => 'Édition réussie',
-            'user' => ['id' => $user->getId(), 'email' => $user->getEmail()]
+            'user' => [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'firstname' => $user->getFirstname(),
+                'lastname' => $user->getLastname(),
+                'job' => $user->getJob(),
+                'linkedin' => $user->getLinkedin(),
+                'city' => $user->getCity(),
+                'phone' => $user->getPhone(),
+                'age' => $user->getAge(),
+            ]
         ], Response::HTTP_CREATED);
     }
 }

@@ -21,6 +21,8 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
   const [blockToDelete, setBlockToDelete] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
+  const [editedBlockId, setEditedBlockId] = useState<number | null>(null);
+  const [flashSuccessId, setFlashSuccessId] = useState<number | null>(null);
   
   const handleDeleteClick = (id: number) => {
     setBlockToDelete(id);
@@ -36,6 +38,8 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
           entityName: "la formation",
         });
         setBlocks((prev) => prev.filter((block) => block.id !== blockToDelete));
+        setIsModalOpen(false);
+        setBlockToDelete(null);
       } catch (error: any) {
         console.error(error.message);
         alert("Erreur lors de la suppression : " + error.message);
@@ -67,6 +71,11 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
     );
     setIsEditModalOpen(false);
     setBlockToEdit(null);
+
+    setEditedBlockId(updatedBlock.id);
+    setFlashSuccessId(updatedBlock.id);
+    setTimeout(() => setFlashSuccessId(null), 1000);
+    setTimeout(() => setEditedBlockId(null), 2000);
   };
 
 

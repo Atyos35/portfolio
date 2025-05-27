@@ -67,6 +67,11 @@ final class BlockController extends AbstractController
 
         return $this->json([
             'message' => 'Création réussie',
+            'block' => [
+                'id' => $block->getId(),
+                'names' => $block->getNames(),
+                'title' => $block->getTitle(),
+            ]
         ], Response::HTTP_CREATED);
     }
 
@@ -112,6 +117,11 @@ final class BlockController extends AbstractController
 
         return $this->json([
             'message' => 'Édition réussie',
+            'block' => [
+                'id' => $block->getId(),
+                'names' => $block->getNames(),
+                'title' => $block->getTitle(),
+            ]
         ], Response::HTTP_CREATED);
     }
 

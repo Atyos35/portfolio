@@ -24,7 +24,7 @@ export default function EditTrainingModal({
         initialValues={initialValues}
         action={`/training/${initialValues.id}/edit`}
         csrfToken={csrfToken}
-        onSubmit={(values) => {
+        onSubmitSuccess={(values) => {
           onEdit(values);
           onClose();
         }}

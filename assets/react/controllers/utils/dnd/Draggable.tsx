@@ -13,6 +13,7 @@ export function Draggable({ id, children }: DraggableProps) {
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
     width: '100%',
+    backgroundColor: 'rgba(230, 244, 234, 0)'
   };
 
   return (
