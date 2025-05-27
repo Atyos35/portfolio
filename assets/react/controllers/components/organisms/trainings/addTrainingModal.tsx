@@ -22,7 +22,7 @@ export default function AddTrainingModal({
         initialValues={emptyTraining}
         action="/training/new"
         csrfToken={csrfToken}
-        onSubmit={(values) => {
+        onSubmitSuccess={(values) => {
           onAdd(values);
           onClose();
         }}

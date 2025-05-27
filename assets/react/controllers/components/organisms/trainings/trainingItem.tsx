@@ -3,20 +3,31 @@ import { Training } from '../../../models/trainings/training.model';
 import { formatDuration } from '../../../utils/formatDuration';
 import EditButton from '../../atoms/editButton';
 import DeleteButton from '../../atoms/deleteButton';
+import { motion, AnimatePresence } from 'framer-motion';
+import CheckIcon from '../../atoms/checkIcon';
 
 interface TrainingItemProps {
   training: Training;
   onEdit: (values: any) => void;
   onDelete: (id: number) => void;
+  showCheckIcon?: boolean;
+  flash?: boolean;
 }
 
 const TrainingItem: React.FC<TrainingItemProps> = ({
   training,
   onEdit,
   onDelete,
+  showCheckIcon,
+  flash
 }) => {
   return (
-    <div className="p-4 border rounded-2xl border-gray-300 shadow-sm flex justify-between items-center">
+    <motion.div
+      initial={false}
+      animate={{ backgroundColor: flash ? '#E6F4EA' : 'rgba(230, 244, 234, 0)' }}
+      transition={{ duration: 0.5 }}
+      className="p-4 border rounded-2xl border-gray-300 shadow-sm flex justify-between items-center"
+    >
       <div>
         <h3 className="text-lg font-semibold">{training.name}</h3>
         <p className="text-sm text-gray-600">
@@ -26,12 +37,38 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
           {training.start_date} - {training.end_date}
           {training.duration && <> ({formatDuration(training.duration)})</>}
         </p>
+        <p className="text-sm text-gray-600">
+          {training.description}
+        </p>
       </div>
       <div className="flex space-x-2">
-        <EditButton onClick={() => onEdit(training)} />
-        <DeleteButton onClick={() => onDelete(training.id)} />
+        <AnimatePresence mode="wait">
+          {showCheckIcon ? (
+            <motion.div
+              key="check"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
+              className="rounded-full shadow"
+            >
+              <CheckIcon />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="edit"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
+            >
+              <EditButton onClick={() => onEdit(training)} />
+              <DeleteButton onClick={() => onDelete(training.id)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

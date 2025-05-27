@@ -20,7 +20,10 @@ export default function Modal({ isOpen, onClose, children, title = "Modal" }: Mo
   }, [isOpen]);
 
   const handleClose = () => {
-    onClose();
+    setShouldRender(false);
+    setTimeout(() => {
+      onClose();
+    }, 300);
   };
 
   return (
