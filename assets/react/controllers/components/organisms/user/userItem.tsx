@@ -15,7 +15,7 @@ const UserItem: React.FC<UserItemProps> = ({ user, onEdit, showCheckIcon, flash 
   return (
     <motion.div
       initial={false}
-      animate={{ backgroundColor: flash ? '#E6F4EA' : '#ffffff' }}
+      animate={{ backgroundColor: flash ? '#E6F4EA' : 'rgba(230, 244, 234, 0)' }}
       transition={{ duration: 0.5 }}
       className="p-4 border rounded-2xl border-gray-300 shadow-sm flex justify-between items-center"
     >

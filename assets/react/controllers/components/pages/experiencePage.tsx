@@ -32,6 +32,8 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [experienceToEdit, setExperienceToEdit] = useState<Experience | null>(null);
+  const [editedExperienceId, setEditedExperienceId] = useState<number | null>(null);
+  const [flashSuccessId, setFlashSuccessId] = useState<number | null>(null);
 
   const handleDeleteClick = (id: number) => {
     setExperienceToDelete(id);
@@ -47,13 +49,13 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
           entityName: "l’expérience",
         });
         setExperiences((prev) => prev.filter((exp) => exp.id !== experienceToDelete));
+        setIsModalOpen(false);
+        setExperienceToDelete(null);
       } catch (error: any) {
         console.error(error.message);
         alert("Erreur lors de la suppression : " + error.message);
       }
     }
-    setIsModalOpen(false);
-    setExperienceToDelete(null);
   };
 
   const cancelDelete = () => {
@@ -80,6 +82,13 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
         )
       )
     );
+    setIsEditModalOpen(false);
+    setExperienceToEdit(null);
+
+    setEditedExperienceId(updatedExperience.id);
+    setFlashSuccessId(updatedExperience.id);
+    setTimeout(() => setFlashSuccessId(null), 1000);
+    setTimeout(() => setEditedExperienceId(null), 2000);
   };
 
   const cancel = () => {
@@ -98,6 +107,8 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
         experiences={experiences}
         onDeleted={handleDeleteClick}
         onEdit={handleEditClick}
+        editedExperienceId={editedExperienceId}
+        flashSuccessId={flashSuccessId}
       />
       {isAddModalOpen && (
         <AddExperienceModal

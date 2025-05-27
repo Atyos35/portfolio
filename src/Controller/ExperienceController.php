@@ -61,6 +61,16 @@ final class ExperienceController extends AbstractController
 
         return $this->json([
             'message' => 'Création réussie',
+            'experience' => [
+                'id' => $experience->getId(),
+                'name' => $experience->getName(),
+                'start_date' => $experience->getStartDate(),
+                'end_date' => $experience->getEndDate(),
+                'description' => $experience->getDescription(),
+                'duration' => $experience->getDuration(),
+                'company' => $experience->getCompany(),
+                'city' => $experience->getCity(),
+            ]
         ], Response::HTTP_CREATED);
     }
 
@@ -102,6 +112,16 @@ final class ExperienceController extends AbstractController
 
         return $this->json([
             'message' => 'Édition réussie',
+            'experience' => [
+                'id' => $experience->getId(),
+                'name' => $experience->getName(),
+                'start_date' => $experience->getStartDate(),
+                'end_date' => $experience->getEndDate(),
+                'description' => $experience->getDescription(),
+                'duration' => $experience->getDuration(),
+                'company' => $experience->getCompany(),
+                'city' => $experience->getCity(),
+            ]
         ], Response::HTTP_CREATED);
     }
 

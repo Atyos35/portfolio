@@ -7,14 +7,14 @@ type ExperienceFormProps = {
   initialValues: Experience;
   action: string;
   csrfToken: string;
-  onSubmit?: (values: Experience) => void;
+  onSubmitSuccess?: (values: Experience) => void;
 };
 
 export default function ExperienceForm({
   initialValues,
   action,
   csrfToken,
-  onSubmit,
+  onSubmitSuccess,
 }: ExperienceFormProps) {
   const {
     register,
@@ -22,9 +22,7 @@ export default function ExperienceForm({
     onSubmit: submitForm,
     errors,
     isSubmitting,
-  } = useExperienceForm(action, csrfToken, initialValues, (data: Experience) => {
-    if (onSubmit) onSubmit(data);
-  });
+  } = useExperienceForm(action, csrfToken, initialValues, onSubmitSuccess);
 
   return (
     <form

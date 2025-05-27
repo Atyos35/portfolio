@@ -22,7 +22,7 @@ export default function AddExperienceModal({
         initialValues={emptyExperience}
         action="/experience/new"
         csrfToken={csrfToken}
-        onSubmit={(values) => {
+        onSubmitSuccess={(values) => {
           onAdd(values);
           onClose();
         }}

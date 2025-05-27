@@ -6,12 +6,16 @@ interface ExperienceListProps {
   experiences: Experience[];
   onDeleted: (id: number) => void;
   onEdit: (experience: Experience) => void;
+  editedExperienceId?: number | null;
+  flashSuccessId?: number | null;
 }
 
 const ExperienceList: React.FC<ExperienceListProps> = ({
   experiences,
   onDeleted,
   onEdit,
+  editedExperienceId,
+  flashSuccessId
 }) => {
   return (
     <div className="space-y-4">
@@ -21,6 +25,8 @@ const ExperienceList: React.FC<ExperienceListProps> = ({
           experience={experience}
           onDelete={onDeleted}
           onEdit={onEdit}
+          showCheckIcon={editedExperienceId === experience.id}
+          flash={flashSuccessId === experience.id}
         />
       ))}
     </div>
