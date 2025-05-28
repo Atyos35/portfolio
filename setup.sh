@@ -25,7 +25,7 @@ echo "Installation des dépendances Node.js..."
 npm install
 
 echo "Build des assets..."
-npm install
+npm run build
 
 echo "🌐 Lancement du serveur PHP local..."
 php -S localhost:8000 -t public
