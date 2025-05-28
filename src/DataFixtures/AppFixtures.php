@@ -95,16 +95,17 @@ class AppFixtures extends Fixture
         }
 
         $blocks = [
-            ['Langages', ['PHP', 'JavaScript', "Python"]],
-            ['frameworks', ['Symfony', 'API Platform', "NestJS"]],
-            ['Logiciels', ['Postman', 'Docker', "Putty"]],
-            ['Base de données', ['MySQL', 'MongoDB']]
+            ['Langages', ['PHP', 'JavaScript', "Python"], 1],
+            ['frameworks', ['Symfony', 'API Platform', "NestJS"], 2],
+            ['Logiciels', ['Postman', 'Docker', "Putty"], 3],
+            ['Base de données', ['MySQL', 'MongoDB'], 4]
         ];
 
-        foreach ($blocks as [$title, $names]) {
+        foreach ($blocks as [$title, $names, $position]) {
             $block = new Block();
             $block->setTitle($title);
             $block->setNames($names);
+            $block->setPosition($position);
             $user->addBlock($block);
 
             $manager->persist($block);
