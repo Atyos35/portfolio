@@ -27,5 +27,5 @@ npm install
 echo "Build des assets..."
 npm run build
 
-echo "🌐 Lancement du serveur PHP local..."
+echo "Lancement du serveur PHP local..."
 php -S localhost:8000 -t public
