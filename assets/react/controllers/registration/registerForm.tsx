@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useRegisterForm } from "./useRegisterForm";
+import { motion } from "framer-motion";
+import HidePwIcon from '../components/atoms/hidePwIcon';
+import ShowPwIcon from '../components/atoms/showPwIcon';
 
 interface RegisterFormProps {
     action: string;
@@ -14,7 +17,13 @@ export default function RegisterForm({ action, csrfToken }: RegisterFormProps) {
     const password = watch("plainPassword");
 
     return (
-        <div className="mt-8 p-8 rounded-2xl shadow-md w-96 section-background">
+        <motion.div
+            className="mt-8 p-8 rounded-2xl shadow-md w-96 section-background"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
             <h1 className="text-2xl font-semibold mb-6 text-center">Inscription</h1>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="flex flex-wrap -mx-2">
@@ -113,20 +122,12 @@ export default function RegisterForm({ action, csrfToken }: RegisterFormProps) {
                             className="absolute right-3 top-2.5 text-gray-600 hover:text-gray-900"
                             aria-label={showPassword ? "Masquer mot de passe" : "Afficher mot de passe"}
                         >
-                            {showPassword ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-9a8.96 8.96 0 011.522-4.812m3.758-1.67A9.01 9.01 0 0112 5c5 0 9 4 9 9a8.96 8.96 0 01-1.522 4.812M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 18M10.477 10.477a3 3 0 104.046 4.046M9.75 9.75L3 3m18 18l-6.75-6.75" />
-                                </svg>
-                            )}
+                            {showPassword ? <ShowPwIcon /> : <HidePwIcon />}
                         </button>
                     </div>
                     {errors.plainPassword && <p className="text-red-500 text-sm mt-1">{errors.plainPassword.message}</p>}
                 </div>
-
+                
                 <div>
                     <label className="block text-sm font-medium mb-1 text-black">Confirmer le mot de passe</label>
                     <div className="relative">
@@ -141,15 +142,7 @@ export default function RegisterForm({ action, csrfToken }: RegisterFormProps) {
                             className="absolute right-3 top-2.5 text-gray-600 hover:text-gray-900"
                             aria-label={showConfirmPassword ? "Masquer confirmation" : "Afficher confirmation"}
                         >
-                            {showConfirmPassword ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-9a8.96 8.96 0 011.522-4.812m3.758-1.67A9.01 9.01 0 0112 5c5 0 9 4 9 9a8.96 8.96 0 01-1.522 4.812M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 18M10.477 10.477a3 3 0 104.046 4.046M9.75 9.75L3 3m18 18l-6.75-6.75" />
-                                </svg>
-                            )}
+                            {showConfirmPassword ? <ShowPwIcon /> : <HidePwIcon />}
                         </button>
                     </div>
                     {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>}
@@ -162,6 +155,6 @@ export default function RegisterForm({ action, csrfToken }: RegisterFormProps) {
                     S'inscrire
                 </button>
             </form>
-        </div>
+        </motion.div>
     );
 }

@@ -53,4 +53,4 @@ Mot de passe : password
 
 ### 🔁 6. Si vous souhaitez vous inscrire à CVMaker
 
-Cliquez sur le lien "S'inscrire" remplissez les champs et rendez-vous à cetet adresse : http://localhost:8125 dans votre navigateur pour valider votre email !
+Cliquez sur le lien "S'inscrire" remplissez les champs et rendez-vous à cette adresse : http://localhost:8125 dans votre navigateur pour valider votre email !
