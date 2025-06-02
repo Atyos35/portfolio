@@ -87,10 +87,12 @@ RUN set -eux; \
 COPY --link . ./
 RUN rm -Rf frankenphp/
 
+RUN ls -alh . && cat .env || echo ".env not found"
+
 RUN set -eux; \
 	mkdir -p var/cache var/log; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
-	composer dump-env prod || true; \
+	composer dump-env prod; \
 	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; \
 	php bin/console cache:clear; \
