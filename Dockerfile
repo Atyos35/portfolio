@@ -13,7 +13,7 @@ FROM frankenphp_upstream AS frankenphp_base
 
 WORKDIR /app
 
-#VOLUME /app/var/
+VOLUME /app/var/
 
 # persistent / runtime deps
 # hadolint ignore=DL3008
@@ -31,7 +31,6 @@ RUN set -eux; \
 		intl \
 		opcache \
 		zip \
-		fileinfo \
 	;
 
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
@@ -90,5 +89,6 @@ RUN rm -Rf frankenphp/
 RUN set -eux; \
 	mkdir -p var/cache var/log; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
+	composer dump-env prod; \
 	composer run-script --no-dev post-install-cmd; \
-	sync;
+	chmod +x bin/console; sync;
