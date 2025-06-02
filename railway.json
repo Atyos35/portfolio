@@ -1,0 +1,8 @@
+{
+  "build": {
+    "env": {
+      "APP_ENV": "prod"
+    }
+  },
+  "start": "php -S 0.0.0.0:$PORT -t public"
+}
