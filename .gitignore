@@ -9,6 +9,7 @@
 /vendor/
 ###< symfony/framework-bundle ###
 .env.dev
+.env.test
 .env
 
 /node_modules/
