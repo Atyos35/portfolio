@@ -64,7 +64,41 @@ final class UserController extends AbstractController
                 'city' => $user->getCity(),
                 'phone' => $user->getPhone(),
                 'age' => $user->getAge(),
+                'profilePicture' => $user->getProfilePicture(),
             ]
         ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/{id}/edit/profile_picture', name: 'app_user_edit_profile_picture', methods: ['POST'])]
+    public function editProfilePicture(
+        Request $request,
+        User $user,
+        EntityManagerInterface $entityManager,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ): Response {
+        $csrfToken = $request->request->get('_csrf_token');
+        
+        if (!$csrfTokenManager->isTokenValid(new CsrfToken('user_form', $csrfToken))) {
+            return $this->json(['message' => 'Invalid CSRF token'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $file = $request->files->get('profilePicture');
+
+        if ($file && $file->isValid()) {
+            $filename = uniqid() . '.' . $file->guessClientExtension();
+            $file->move($this->getParameter('uploads_directory'), $filename);
+
+            $user->setProfilePicture('/uploads/' . $filename);
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->json([
+                'message' => 'Photo mise à jour avec succès',
+                'profilePicture' => $user->getProfilePicture(),
+            ]);
+        }
+
+        return $this->json(['message' => 'Fichier invalide'], Response::HTTP_BAD_REQUEST);
     }
 }

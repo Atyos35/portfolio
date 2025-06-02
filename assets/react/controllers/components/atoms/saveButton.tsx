@@ -1,7 +1,7 @@
 import React from 'react';
 
 type SaveButtonProps = {
-  isSubmitting: boolean;
+  isSubmitting?: boolean;
 };
 
 export default function SaveButton({ isSubmitting }: SaveButtonProps) {

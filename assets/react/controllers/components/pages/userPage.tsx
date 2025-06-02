@@ -45,8 +45,10 @@ const UserPage: React.FC<UserPageProps> = ({
       <UserItem
         user={localUser}
         onEdit={handleEditClick}
+        onProfilePictureUpdated={handleEditUser}
         showCheckIcon={showCheckIcon}
         flash={isFlashSuccess}
+        csrfToken={csrfToken}
       />
 
       {isEditModalOpen && (

@@ -2,7 +2,7 @@ const HidePw = require('../../../../icons/hidePW.png');
 
 import React from 'react';
 
-const CheckIcon: React.FC<{ className?: string }> = ({ className = '' }) => {
+const HidePwIcon: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
     <img
       src={HidePw}
@@ -12,4 +12,4 @@ const CheckIcon: React.FC<{ className?: string }> = ({ className = '' }) => {
   );
 };
 
-export default CheckIcon;
+export default HidePwIcon;
