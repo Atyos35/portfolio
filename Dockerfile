@@ -80,8 +80,6 @@ COPY --link frankenphp/worker.Caddyfile /etc/caddy/worker.Caddyfile
 
 # prevent the reinstallation of vendors at every changes in the source code
 COPY --link composer.* symfony.* ./
-COPY --link .env ./
-RUN ls -alh .env
 RUN set -eux; \
 	composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
@@ -89,12 +87,10 @@ RUN set -eux; \
 COPY --link . ./
 RUN rm -Rf frankenphp/
 
-RUN ls -alh . && cat .env || echo ".env not found"
-
 RUN set -eux; \
 	mkdir -p var/cache var/log; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
-	composer dump-env prod; \
+	if [ -f .env ]; then composer dump-env prod; else echo ".env absent, skip dump-env"; fi; \
 	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; \
 	php bin/console cache:clear; \
