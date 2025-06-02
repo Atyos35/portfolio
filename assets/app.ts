@@ -9,5 +9,6 @@ import './bootstrap.js';
 
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
+import 'filepond/dist/filepond.min.css'
 
 registerReactControllerComponents(require.context('./react/controllers', true, /\.(j|t)sx?$/));

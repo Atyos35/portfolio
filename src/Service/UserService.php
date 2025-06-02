@@ -18,6 +18,7 @@ final class UserService
             'age'       => $user->getAge(),
             'city'      => $user->getCity(),
             'phone'     => $user->getPhone(),
+            'profilePicture'     => $user->getProfilePicture(),
         ];
     }
 }

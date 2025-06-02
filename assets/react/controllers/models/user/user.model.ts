@@ -8,6 +8,7 @@ export type User = {
   city: string;
   age: string;
   phone: string;
+  profilePicture: string;
 };
 
 export const emptyBlock: User = {
@@ -20,4 +21,5 @@ export const emptyBlock: User = {
   city: "",
   age: "",
   phone: "",
+  profilePicture: "",
 };
