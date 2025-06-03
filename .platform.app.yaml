@@ -19,6 +19,10 @@ mounts:
     source: local
     source_path: uploads
 
+  'var':
+    source: local
+    source_path: var
+
 relationships:
   database: 'mysql:mysql'
 
