@@ -31,6 +31,7 @@ variables:
   env:
     APP_ENV: 'dev'
     APP_DEBUG: '1'
+    DATABASE_URL: "mysql://user@database.internal:3306/main?serverVersion=8.0&charset=utf8mb4"
 
 hooks:
   build: |
@@ -43,4 +44,6 @@ hooks:
 
   deploy: |
     set -x -e
+    php bin/console doctrine:migrations:sync-metadata-storage
+    php bin/console doctrine:migrations:diff
     php bin/console doctrine:migrations:migrate --no-interaction
