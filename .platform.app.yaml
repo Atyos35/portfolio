@@ -1,44 +1,45 @@
-# The name of this app. Must be unique within a project.
+# .platform.app.yaml
+
 name: app
 
-hooks:
-   build: |
-     set -x -e
-
-     curl -fs https://get.symfony.com/cloud/configurator | bash
-
-     symfony-build
-
-     php bin/console d:s:c
-     php bin/console doctrine:fixtures:load --no-interaction --append
-
-     symfony-cache-snapshot
-
-# The runtime the application uses. The 'type' key defines the base container
-# image that will be used to run the application. There is a separate base
-# container image for each primary language for the application,
-# in multiple versions. Check the PHP documentation
-# (https://docs.platform.sh/languages/php.html#supported-versions)
-# to find the supported versions for the 'php' type.
 type: 'php:8.3'
 
-# The following block defines a single writable directory, 'web/uploads'
-# The 'source' specifies where the writable mount is. The 'local' source
-# indicates that the mount point will point to a local directory on the
-# application container. The 'source_path' specifies the subdirectory
-# from within the source that the mount should point at. 
+disk: 512
+
+# Point d'entrée principal (ex: Symfony public/)
+web:
+  locations:
+    '/':
+      root: 'public'
+      index: 'index.php'
+      allow: true
+
 mounts:
   'web/uploads':
     source: local
     source_path: uploads
 
-# The size of the persistent disk of the application (in MB).
-disk: 256
-
-# The relationships of the application with services or other applications.
-#
-# The left-hand side is the name of the relationship as it will be exposed
-# to the application in the PLATFORM_RELATIONSHIPS variable. The right-hand
-# side is in the form '<service name>:<endpoint name>'.
 relationships:
-  mysql: 'mysql:mysql'
+  database: 'mysql:mysql'
+
+# Variables d'environnement
+variables:
+  env:
+    APP_ENV: 'dev'
+    APP_DEBUG: '1'
+
+hooks:
+  build: |
+    set -x -e
+
+    curl -fs https://get.symfony.com/cloud/configurator | bash
+    symfony-build
+
+    # NE PAS créer la BDD : elle est déjà provisionnée par Platform.sh
+
+    symfony-cache-snapshot
+
+  deploy: |
+    set -x -e
+
+    php bin/console doctrine:fixtures:load --no-interaction --append
