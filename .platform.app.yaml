@@ -9,9 +9,8 @@ hooks:
 
      symfony-build
 
-     php bin/console d:d:c
      php bin/console d:s:c
-     php bin/console doctrine:fixtures:load --no-interaction
+     php bin/console doctrine:fixtures:load --no-interaction --append
 
      symfony-cache-snapshot
 
