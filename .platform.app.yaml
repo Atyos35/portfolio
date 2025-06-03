@@ -1,0 +1,47 @@
+# .platform.app.yaml
+
+name: app
+
+type: 'php:8.3'
+
+disk: 512
+
+# Point d'entrée principal (ex: Symfony public/)
+web:
+  locations:
+    '/':
+      root: 'public'
+      passthru: "/index.php"
+      allow: true
+
+mounts:
+  'web/uploads':
+    source: local
+    source_path: uploads
+
+  'var':
+    source: local
+    source_path: var
+
+relationships:
+  database: 'mysql:mysql'
+
+# Variables d'environnement
+variables:
+  env:
+    APP_ENV: 'dev'
+    APP_DEBUG: '1'
+    DATABASE_URL: mysql://user@database.internal:3306/main?serverVersion=11.0&charset=utf8mb4
+
+hooks:
+  build: |
+    set -x -e
+
+    curl -fs https://get.symfony.com/cloud/configurator | bash
+    symfony-build
+
+    symfony-cache-snapshot
+
+  deploy: |
+    set -x -e
+    symfony-deploy 

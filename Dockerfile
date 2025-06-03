@@ -80,15 +80,15 @@ COPY --link frankenphp/worker.Caddyfile /etc/caddy/worker.Caddyfile
 # prevent the reinstallation of vendors at every changes in the source code
 COPY --link composer.* symfony.* ./
 RUN set -eux; \
-	composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+	composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
 # copy sources
 COPY --link . ./
 RUN rm -Rf frankenphp/
 
 RUN set -eux; \
-	mkdir -p var/cache var/log; \
-	composer dump-autoload --classmap-authoritative --no-dev; \
-	composer dump-env prod; \
-	composer run-script --no-dev post-install-cmd; \
-	chmod +x bin/console; sync;
+  mkdir -p var/cache var/log; \
+  composer dump-autoload --classmap-authoritative --no-dev; \
+  composer dump-env prod; \
+  chmod +x bin/console; \
+  sync
