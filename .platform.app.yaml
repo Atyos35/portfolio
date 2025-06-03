@@ -11,7 +11,9 @@ hooks:
 
      php bin/console d:d:c
      php bin/console d:s:c
-     php bin/console doctrine:fixtures:load
+     php bin/console doctrine:fixtures:load --no-interaction
+
+     symfony-cache-snapshot
 
 # The runtime the application uses. The 'type' key defines the base container
 # image that will be used to run the application. There is a separate base
