@@ -11,7 +11,7 @@ web:
   locations:
     '/':
       root: 'public'
-      index: 'index.php'
+      passthru: "/index.php"
       allow: true
 
 mounts:
