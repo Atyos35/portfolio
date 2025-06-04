@@ -2,6 +2,3 @@
 mysql:
   type: mysql:11.0
   disk: 512
-  configuration:
-    schemas:
-      - portfolio
