@@ -14,13 +14,6 @@ web:
       passthru: "/index.php"
       allow: true
 
-database:
-  type: mysql:11.0
-  disk: 512
-  configuration:
-    schemas:
-      - portfolio
-
 mounts:
   'web/uploads':
     source: local
@@ -38,6 +31,7 @@ variables:
   env:
     APP_ENV: 'dev'
     APP_DEBUG: '1'
+    DATABASE_URL: "mysql://user@database.internal:3306/portfolio?serverVersion=11.0&charset=utf8mb4"
 
 hooks:
   build: |
