@@ -10,6 +10,8 @@
 ###< symfony/framework-bundle ###
 .env.dev
 .env.test
+.env
+dump.sql
 
 /node_modules/
 
