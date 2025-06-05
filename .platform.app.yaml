@@ -15,7 +15,7 @@ web:
       allow: true
 
 mounts:
-  'web/uploads':
+  'public/uploads':
     source: local
     source_path: uploads
 
@@ -44,5 +44,5 @@ hooks:
 
   deploy: |
     set -x -e
-    
+
     symfony-deploy 
