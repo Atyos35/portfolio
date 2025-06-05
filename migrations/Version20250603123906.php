@@ -50,9 +50,9 @@ final class Version20250602InsertInitialUserData extends AbstractMigration
         ");
         
         $this->addSql("
-            INSERT INTO block (user_id, title, content) VALUES
-            (@user_id, 'Présentation', 'Je suis un développeur web passionné par la création d''applications performantes, intuitives et accessibles.'),
-            (@user_id, 'Compétences', 'Symfony, Laravel, React, Vue.js, SQL, Tailwind, Docker, Git, GitHub Actions, API Platform');
+            INSERT INTO block (user_id, title, names) VALUES
+            (@user_id, 'Frameworks', ['Symfony', 'API Platform', 'NestJS']),
+            (@user_id, 'Langages', ['PHP', 'JavaScript', 'Python]);
         ");
     }
 
