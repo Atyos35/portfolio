@@ -51,8 +51,8 @@ final class Version20250602InsertInitialUserData extends AbstractMigration
         
         $this->addSql("
             INSERT INTO block (user_id, title, names, position) VALUES
-            ($userId, 'Frameworks', '[\"Symfony\", \"API Platform\", \"NestJS\"]', 1),
-            ($userId, 'Langages', '[\"PHP\", \"JavaScript\", \"Python\"]', 2)
+            ($@user_id,, 'Frameworks', '[\"Symfony\", \"API Platform\", \"NestJS\"]', 1),
+            ($@user_id,, 'Langages', '[\"PHP\", \"JavaScript\", \"Python\"]', 2)
         ");
     }
 
