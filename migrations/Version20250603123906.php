@@ -44,9 +44,9 @@ final class Version20250602InsertInitialUserData extends AbstractMigration
         ");
 
         $this->addSql("
-            INSERT INTO training (user_id, name, school, city, start_date, end_date) VALUES
-            (@user_id, 'Concepteur Développeur d''Applications', 'ENI Ecole Informatique', 'Rennes', '2021-10-01', '2022-12-01'),
-            (@user_id, 'Développeur Web et Web Mobile', 'ENI Ecole Informatique', 'Rennes', '2021-01-01', '2021-09-01');
+            INSERT INTO training (user_id, name, school, city, start_date, end_date, description) VALUES
+            (@user_id, 'Concepteur Développeur d''Applications', 'ENI Ecole Informatique', 'Rennes', '2021-10-01', '2022-12-01', ''),
+            (@user_id, 'Développeur Web et Web Mobile', 'ENI Ecole Informatique', 'Rennes', '2021-01-01', '2021-09-01', '');
         ");
         
         $this->addSql("
