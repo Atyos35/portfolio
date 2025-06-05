@@ -46,5 +46,5 @@ hooks:
     set -x -e
     php bin/console d:d:d --force --no-interaction
     php bin/console d:d:c
-    php bin/console doctrine:schema:drop --force --no-interaction
+    php bin/console doctrine:schema:update --force --no-interaction
     symfony-deploy 
