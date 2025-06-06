@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e  # Stoppe l'exécution en cas d'erreur
+set -e
 
 echo "Construction des services Docker..."
 docker compose build --pull --no-cache

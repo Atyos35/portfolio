@@ -18,7 +18,7 @@ final class Version20250602InsertInitialUserData extends AbstractMigration
     {
         $passwordHash = password_hash('password', PASSWORD_BCRYPT);
         $this->addSql("
-            INSERT INTO user (email, roles, password, firstname, lastname, job, linkedin, age, city, phone, is_verified)
+            INSERT INTO user (email, roles, password, firstname, lastname, job, linkedin, age, city, phone, is_verified, profile_picture)
             VALUES (
                 'valerian.guemene@gmail.com',
                 '[\"ROLE_USER\"]',
@@ -30,7 +30,8 @@ final class Version20250602InsertInitialUserData extends AbstractMigration
                 34,
                 'Rennes',
                 '0684445191',
-                1
+                1,
+                ''
             );
         ");
 
@@ -43,15 +44,15 @@ final class Version20250602InsertInitialUserData extends AbstractMigration
         ");
 
         $this->addSql("
-            INSERT INTO training (user_id, name, school, city, start_date, end_date) VALUES
-            (@user_id, 'Concepteur Développeur d''Applications', 'ENI Ecole Informatique', 'Rennes', '2021-10-01', '2022-12-01'),
-            (@user_id, 'Développeur Web et Web Mobile', 'ENI Ecole Informatique', 'Rennes', '2021-01-01', '2021-09-01');
+            INSERT INTO training (user_id, name, school, city, start_date, end_date, description) VALUES
+            (@user_id, 'Concepteur Développeur d''Applications', 'ENI Ecole Informatique', 'Rennes', '2021-10-01', '2022-12-01', ''),
+            (@user_id, 'Développeur Web et Web Mobile', 'ENI Ecole Informatique', 'Rennes', '2021-01-01', '2021-09-01', '');
         ");
         
         $this->addSql("
-            INSERT INTO block (user_id, title, content) VALUES
-            (@user_id, 'Présentation', 'Je suis un développeur web passionné par la création d''applications performantes, intuitives et accessibles.'),
-            (@user_id, 'Compétences', 'Symfony, Laravel, React, Vue.js, SQL, Tailwind, Docker, Git, GitHub Actions, API Platform');
+            INSERT INTO block (user_id, title, names, position) VALUES
+            (@user_id, 'Frameworks', '[\"Symfony\", \"API Platform\", \"NestJS\"]', 1),
+            (@user_id, 'Langages', '[\"PHP\", \"JavaScript\", \"Python\"]', 2)
         ");
     }
 
