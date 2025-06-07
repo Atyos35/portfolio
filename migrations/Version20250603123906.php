@@ -18,7 +18,7 @@ final class Version20250602InsertInitialUserData extends AbstractMigration
     {
         $passwordHash = password_hash('password', PASSWORD_BCRYPT);
         $this->addSql("
-            INSERT INTO user (email, roles, password, firstname, lastname, job, linkedin, age, city, phone, is_verified, profile_picture)
+            INSERT INTO user (email, roles, password, firstname, lastname, job, linkedin, age, city, phone, profile_picture)
             VALUES (
                 'valerian.guemene@gmail.com',
                 '[\"ROLE_USER\"]',
@@ -30,7 +30,6 @@ final class Version20250602InsertInitialUserData extends AbstractMigration
                 34,
                 'Rennes',
                 '0684445191',
-                1,
                 ''
             );
         ");

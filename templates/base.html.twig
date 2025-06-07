@@ -36,6 +36,8 @@
             </div>
         </header>
 
+        <div {{ react_component('utils/toaster/toaster') }}></div>
+
         <main class="flex-1 flex items-center justify-center">
             {% block body %}
                 {{ turbo_stream }}

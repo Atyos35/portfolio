@@ -74,9 +74,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Block::class, mappedBy: 'user')]
     private Collection $blocks;
 
-    #[ORM\Column]
-    private bool $isVerified = false;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profile_picture = null;
 
@@ -320,18 +317,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $block->setUser(null);
             }
         }
-
-        return $this;
-    }
-
-    public function isVerified(): ?bool
-    {
-        return $this->isVerified;
-    }
-
-    public function setIsVerified(bool $isVerified): static
-    {
-        $this->isVerified = $isVerified;
 
         return $this;
     }
