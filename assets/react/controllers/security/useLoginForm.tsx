@@ -1,5 +1,6 @@
 import * as Turbo from "@hotwired/turbo";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 export function useLoginForm(action: string, csrfToken: string) {
     const {
@@ -8,7 +9,10 @@ export function useLoginForm(action: string, csrfToken: string) {
         formState: { errors },
     } = useForm();
 
+    const [errorMessage, setErrorMessage] = useState("");
+
     const onSubmit = async (data: any) => {
+        setErrorMessage("");
         if (!csrfToken) {
             console.error("Token CSRF non disponible");
             return;
@@ -24,7 +28,7 @@ export function useLoginForm(action: string, csrfToken: string) {
             const json = await response.json();
 
             if (!response.ok) {
-                console.error("Erreur côté serveur :", json);
+                setErrorMessage(json.message || "Identifiants incorrects.");
                 return;
             }
 
@@ -34,5 +38,5 @@ export function useLoginForm(action: string, csrfToken: string) {
         }
     };
 
-    return { register, handleSubmit, errors, onSubmit };
+    return { register, handleSubmit, errors, onSubmit, errorMessage };
 }

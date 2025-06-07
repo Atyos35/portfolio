@@ -1,6 +1,6 @@
 import { useLoginForm } from "./useLoginForm";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import ShowPwIcon from "../components/atoms/showPwIcon";
 import HidePwIcon from "../components/atoms/hidePwIcon";
 
@@ -10,8 +10,14 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ action, csrfToken }: LoginFormProps) {
-    const { register, handleSubmit, onSubmit } = useLoginForm(action, csrfToken);
+    const { register, handleSubmit, onSubmit, errorMessage  } = useLoginForm(action, csrfToken);
     const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        console.log("LoginForm monté");
+        return () => console.log("LoginForm démonté");
+        }, []);
+
 
     return (
         <motion.div
@@ -59,6 +65,20 @@ export default function LoginForm({ action, csrfToken }: LoginFormProps) {
                 </button>
             </form>
             <div className="mt-4 text-center">
+                <AnimatePresence>
+                    {errorMessage && (
+                        <motion.div
+                            key="error-message"
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -5 }}
+                            transition={{ duration: 0.3 }}
+                            className="mb-2 bg-red-100 text-red-700 border border-red-300 rounded-lg px-4 py-2 text-sm text-center shadow-sm"
+                        >
+                            {errorMessage}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
                 <button
                     onClick={() => Turbo.visit("/register")}
                     className="text-blue-600 hover:underline text-sm"
