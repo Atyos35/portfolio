@@ -1,10 +1,10 @@
 import { useLoginForm } from "./useLoginForm";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ShowPwIcon from "../components/atoms/showPwIcon";
 import HidePwIcon from "../components/atoms/hidePwIcon";
 
-interface LoginFormProps {
+export interface LoginFormProps {
     action: string;
     csrfToken: string;
 }
@@ -12,12 +12,6 @@ interface LoginFormProps {
 export default function LoginForm({ action, csrfToken }: LoginFormProps) {
     const { register, handleSubmit, onSubmit, errorMessage  } = useLoginForm(action, csrfToken);
     const [showPassword, setShowPassword] = useState(false);
-
-    useEffect(() => {
-        console.log("LoginForm monté");
-        return () => console.log("LoginForm démonté");
-        }, []);
-
 
     return (
         <motion.div
@@ -80,7 +74,7 @@ export default function LoginForm({ action, csrfToken }: LoginFormProps) {
                     )}
                 </AnimatePresence>
                 <button
-                    onClick={() => Turbo.visit("/register")}
+                    onClick={() => (window.location.href = "/register")}
                     className="text-blue-600 hover:underline text-sm"
                 >
                     S'inscrire

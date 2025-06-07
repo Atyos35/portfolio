@@ -157,7 +157,7 @@ export default function RegisterForm({ action, csrfToken }: RegisterFormProps) {
             </form>
             <div className="mt-4 text-center">
                 <button
-                    onClick={() => Turbo.visit("/login")}
+                    onClick={() => (window.location.href = "/login")}
                     className="text-blue-600 hover:underline text-sm"
                 >
                     Se connecter
