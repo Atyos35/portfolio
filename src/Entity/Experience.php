@@ -16,7 +16,7 @@ class Experience
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 42)]
+    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
@@ -25,16 +25,16 @@ class Experience
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $end_date = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateInterval $duration = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 255)]
     private ?string $company = null;
 
-    #[ORM\Column(length: 15)]
+    #[ORM\Column(length: 255)]
     private ?string $city = null;
 
     #[ORM\ManyToOne(inversedBy: 'experiences')]

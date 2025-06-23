@@ -14,10 +14,10 @@ class Training
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 44)]
+    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 43)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
@@ -30,7 +30,7 @@ class Training
     #[ORM\Column(nullable: true)]
     private ?\DateInterval $duration = null;
 
-    #[ORM\Column(length: 15)]
+    #[ORM\Column(length: 255)]
     private ?string $city = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainings')]

@@ -45,6 +45,7 @@ export function useTrainingForm(
       handleSubmit,
       formState: { errors, isSubmitting },
       reset,
+      setValue,
     } = useForm<TrainingFormInput>({
       resolver: zodResolver(schema),
       defaultValues: initialValues,
@@ -77,5 +78,6 @@ export function useTrainingForm(
       errors,
       isSubmitting,
       reset,
+      setValue,
     };
 }
