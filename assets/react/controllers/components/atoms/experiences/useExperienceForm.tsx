@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import * as Turbo from "@hotwired/turbo";
 import { Experience } from "../../../models/experiences/experience.model";
 
 const schema = z.object({
@@ -45,6 +44,7 @@ export function useExperienceForm(
       handleSubmit,
       formState: { errors, isSubmitting },
       reset,
+      setValue,
     } = useForm<ExperienceFormInput>({
       resolver: zodResolver(schema),
       defaultValues: initialValues,
@@ -77,5 +77,6 @@ export function useExperienceForm(
       errors,
       isSubmitting,
       reset,
+      setValue
     };
 }

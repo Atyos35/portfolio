@@ -21,6 +21,7 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
   showCheckIcon,
   flash
 }) => {
+  const [expanded, setExpanded] = useState(false);
   return (
     <motion.div
       initial={false}
@@ -28,7 +29,7 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
       transition={{ duration: 0.5 }}
       className="p-4 border rounded-2xl border-gray-300 shadow-sm flex justify-between items-center"
     >
-      <div>
+      <div className="max-w-[31.25rem] flex-grow break-words">
         <h3 className="text-lg font-semibold">{training.name}</h3>
         <p className="text-sm text-gray-600">
           {training.school} - {training.city}
@@ -37,9 +38,20 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
           {training.start_date} - {training.end_date}
           {training.duration && <> ({formatDuration(training.duration)})</>}
         </p>
-        <p className="text-sm text-gray-600">
-          {training.description}
-        </p>
+        <div
+          className={`
+            experience-description text-sm text-gray-600 max-w-[31.25rem] 
+            ${expanded ? "" : "line-clamp-3 overflow-hidden"}
+          `}
+          dangerouslySetInnerHTML={{ __html: training.description }}
+        />
+        <button
+          className="mt-1 text-blue-600 hover:underline text-sm"
+          onClick={() => setExpanded(!expanded)}
+          aria-label={expanded ? "Réduire la description" : "Afficher plus"}
+        >
+          {expanded ? "Voir moins" : "Voir plus"}
+        </button>
       </div>
       <div className="flex space-x-2">
         <AnimatePresence mode="wait">

@@ -1,7 +1,8 @@
-import React from 'react';
+import { useState } from 'react';
 import { useTrainingForm } from './useTrainingForm';
 import { Training } from '../../../models/trainings/training.model';
 import SaveButton from '../saveButton';
+import { SimpleEditor } from '../../../utils/tipTap/simpleEditor';
 
 type TrainingFormProps = {
   initialValues: Training;
@@ -22,7 +23,10 @@ export default function TrainingForm({
     onSubmit: submitForm,
     errors,
     isSubmitting,
+    setValue,
   } = useTrainingForm(action, csrfToken, initialValues, onSubmitSuccess);
+
+  const [description, setDescription] = useState(initialValues.description || '');
 
   return (
     <form
@@ -39,36 +43,6 @@ export default function TrainingForm({
           className="border border-gray-300 rounded px-3 py-2 bg-white"
         />
         {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>}
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="description" className="mb-1">Description</label>
-        <textarea
-          id="description"
-          {...register('description')}
-          className="border border-gray-300 rounded px-3 py-2 bg-white"
-        />
-        {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>}
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="company" className="mb-1">Entreprise</label>
-        <input
-          id="company"
-          {...register('school')}
-          className="border border-gray-300 rounded px-3 py-2 bg-white"
-        />
-        {errors.school && <p className="text-sm text-red-600 mt-1">{errors.school.message}</p>}
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="city" className="mb-1">Ville</label>
-        <input
-          id="city"
-          {...register('city')}
-          className="border border-gray-300 rounded px-3 py-2 bg-white"
-        />
-        {errors.city && <p className="text-sm text-red-600 mt-1">{errors.city.message}</p>}
       </div>
 
       <div className="flex flex-col">
@@ -91,6 +65,42 @@ export default function TrainingForm({
           className="border border-gray-300 rounded px-3 py-2 bg-white"
         />
         {errors.end_date && <p className="text-sm text-red-600 mt-1">{errors.end_date.message}</p>}
+      </div>
+
+      <div className="flex flex-col">
+        <label htmlFor="description" className="mb-1">Description</label>
+        
+        <SimpleEditor
+          value={description}
+          onChange={(html: string) => {
+            setDescription(html);
+            setValue('description', html);
+          }}
+        />
+
+        {errors.description && (
+          <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>
+        )}
+      </div>
+
+      <div className="flex flex-col">
+        <label htmlFor="company" className="mb-1">Entreprise</label>
+        <input
+          id="company"
+          {...register('school')}
+          className="border border-gray-300 rounded px-3 py-2 bg-white"
+        />
+        {errors.school && <p className="text-sm text-red-600 mt-1">{errors.school.message}</p>}
+      </div>
+
+      <div className="flex flex-col">
+        <label htmlFor="city" className="mb-1">Ville</label>
+        <input
+          id="city"
+          {...register('city')}
+          className="border border-gray-300 rounded px-3 py-2 bg-white"
+        />
+        {errors.city && <p className="text-sm text-red-600 mt-1">{errors.city.message}</p>}
       </div>
 
       <SaveButton isSubmitting={isSubmitting} />

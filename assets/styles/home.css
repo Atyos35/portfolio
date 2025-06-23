@@ -56,3 +56,23 @@ header, header * {
     background-repeat: no-repeat;
     background-position: center;
 }
+
+.experience-description ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  padding-left: 0;
+}
+
+.experience-description li {
+  margin-bottom: 0.25rem;
+}
+
+.training-description ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  padding-left: 0;
+}
+
+.training-description li {
+  margin-bottom: 0.25rem;
+}

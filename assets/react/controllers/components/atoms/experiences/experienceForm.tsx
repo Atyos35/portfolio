@@ -1,7 +1,8 @@
-import React from 'react';
 import { useExperienceForm } from './useExperienceForm';
 import { Experience } from '../../../models/experiences/experience.model';
 import SaveButton from '../saveButton';
+import { SimpleEditor } from '../../../utils/tipTap/simpleEditor';
+import { useState } from 'react';
 
 type ExperienceFormProps = {
   initialValues: Experience;
@@ -22,7 +23,10 @@ export default function ExperienceForm({
     onSubmit: submitForm,
     errors,
     isSubmitting,
+    setValue,
   } = useExperienceForm(action, csrfToken, initialValues, onSubmitSuccess);
+
+  const [description, setDescription] = useState(initialValues.description || '');
 
   return (
     <form
@@ -65,14 +69,19 @@ export default function ExperienceForm({
 
       <div className="flex flex-col">
         <label htmlFor="description" className="mb-1">Description</label>
-        <textarea
-          id="description"
-          {...register('description')}
-          className="border border-gray-300 rounded px-3 py-2 bg-white"
+        
+        <SimpleEditor
+          value={description}
+          onChange={(html: string) => {
+            setDescription(html);
+            setValue('description', html);
+          }}
         />
-        {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>}
-      </div>
 
+        {errors.description && (
+          <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>
+        )}
+      </div>
       <div className="flex flex-col">
         <label htmlFor="company" className="mb-1">Entreprise</label>
         <input
