@@ -45,47 +45,49 @@ const UserItem: React.FC<UserItemProps> = ({ user, onEdit, onProfilePictureUpdat
         transition={{ duration: 0.5 }}
         className="p-4 border rounded-2xl border-gray-300 shadow-sm flex justify-between items-center"
       >
-        <div>
-          <div className="flex items-center space-x-4 mb-2">
-            <div className="relative w-20 h-20">
-              <div
-                className="w-full h-full rounded-full shadow overflow-hidden cursor-pointer"
-                onClick={() => setIsModalOpen(true)}
-                title="Modifier la photo de profil"
-              >
-                {user.profilePicture ? (
-                  <img
-                    className="w-full h-full object-cover"
-                    src={user.profilePicture}
-                    alt="Profil"
-                  />
-                ) : (
-                  <ProfilePictureDefault />
-                )}
-              </div>
-              <div
-                className="absolute bottom-0 right-0 bg-white p-1 rounded-full cursor-pointer"
-                onClick={() => setIsModalOpen(true)}
-                title="Modifier la photo"
-              >
-                <EditIcon />
-              </div>
+        <div className="flex items-center space-x-4 mb-2 ml-8">
+          <div className="relative w-20 h-20">
+            <div
+              className="w-full h-full rounded-full shadow overflow-hidden cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+              title="Modifier la photo de profil"
+            >
+              {user.profilePicture ? (
+                <img
+                  className="w-full h-full object-cover"
+                  src={user.profilePicture}
+                  alt="Profil"
+                />
+              ) : (
+                <ProfilePictureDefault />
+              )}
             </div>
-            <div>
-              <h3 className="text-lg font-semibold">
-                {user.firstname} {user.lastname}
-              </h3>
-              <p className="text-sm text-gray-500">
-                {user.job} &bull; {user.linkedin}
-              </p>
+            <div
+              className="absolute bottom-0 right-0 bg-white p-1 rounded-full cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+              title="Modifier la photo"
+            >
+              <EditIcon />
             </div>
           </div>
-          <div className="text-sm text-gray-700 space-y-1">
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Ville:</strong> {user.city}</p>
-            <p><strong>Age:</strong> {user.age} ans</p>
-            <p><strong>Tel:</strong> {user.phone}</p>
+          <div>
+            <h3 className="text-lg font-semibold">
+              {user.firstname} {user.lastname}
+            </h3>
+            <p className="text-sm text-gray-500">
+              {user.job}
+            </p>
+            <p className="text-sm text-gray-500 break-all">
+              {user.linkedin}
+            </p>
           </div>
+        </div>
+
+        <div className="bg-blue-100/40 rounded-xl p-4 shadow text-sm text-gray-700 space-y-1">
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Ville:</strong> {user.city}</p>
+          <p><strong>Age:</strong> {user.age} ans</p>
+          <p><strong>Tel:</strong> {user.phone}</p>
         </div>
 
         <div className="flex space-x-2">
