@@ -84,6 +84,7 @@ class UserControllerTest extends TestCase
                 'city' => 'Paris',
                 'phone' => '0123456789',
                 'age' => '30',
+                'profilePicture' => null,
             ]
         ];
 
