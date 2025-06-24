@@ -15,11 +15,15 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
+use App\Service\InitialDatasForUserService;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct()
+    private InitialDatasForUserService $initialDatasForUserService;
+
+    public function __construct(InitialDatasForUserService $initialDatasForUserService)
     {
+        $this->initialDatasForUserService = $initialDatasForUserService;
     }
 
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
@@ -57,6 +61,8 @@ class RegistrationController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $this->initialDatasForUserService->createInitialDatasForUser($user);
 
         }
         $this->addFlash('email', $user->getEmail());
