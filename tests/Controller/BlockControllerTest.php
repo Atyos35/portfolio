@@ -20,6 +20,7 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Form\FormErrorIterator;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class BlockControllerTest extends TestCase
 {
@@ -197,7 +198,6 @@ class BlockControllerTest extends TestCase
         $this->assertEquals('Édition réussie', $data['message']);
     }
 
-
     public function testDeleteBlockSuccess(): void
     {
         $block = $this->createMock(Block::class);
@@ -215,15 +215,25 @@ class BlockControllerTest extends TestCase
             ->with(new CsrfToken('block_form', $csrfToken))
             ->willReturn(true);
 
+        $user = $this->createMock(User::class);
+        $user->method('getBlocks')->willReturn(
+            new \Doctrine\Common\Collections\ArrayCollection([
+                new \stdClass(), new \stdClass()
+            ])
+        );
+
+        $userProvider = $this->createMock(UserProvider::class);
+        $userProvider->method('getCurrentUser')->willReturn($user);
+
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('remove')->with($block);
         $entityManager->expects($this->once())->method('flush');
 
-        $controller = new BlockController();
-        $container = new Container();
+        $controller = new \App\Controller\BlockController();
+        $container = new \Symfony\Component\DependencyInjection\Container();
         $controller->setContainer($container);
 
-        $response = $controller->delete($request, $block, $entityManager, $csrfManager);
+        $response = $controller->delete($request, $block, $entityManager, $csrfManager, $userProvider);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
@@ -254,9 +264,55 @@ class BlockControllerTest extends TestCase
         $container = new Container();
         $controller->setContainer($container);
 
-        $response = $controller->delete($request, $block, $entityManager, $csrfManager);
+        $response = $controller->delete($request, $block, $entityManager, $csrfManager, $this->createMock(UserProvider::class));
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
     }
+
+    public function testDeleteBlockFailsIfOnlyOneRemaining(): void
+    {
+        $block = $this->createMock(Block::class);
+
+        $csrfToken = 'valid_token';
+        $requestData = [
+            '_csrf_token' => $csrfToken,
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request->headers->set('X-CSRF-TOKEN', $csrfToken);
+
+        $csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrfManager->method('isTokenValid')
+            ->with(new CsrfToken('block_form', $csrfToken))
+            ->willReturn(true);
+
+        $user = $this->createMock(User::class);
+        $user->method('getBlocks')->willReturn(
+            new \Doctrine\Common\Collections\ArrayCollection([
+                new \stdClass()
+            ])
+        );
+
+        $userProvider = $this->createMock(UserProvider::class);
+        $userProvider->method('getCurrentUser')->willReturn($user);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+        $entityManager->expects($this->never())->method('flush');
+
+        $controller = new \App\Controller\BlockController();
+        $container = new \Symfony\Component\DependencyInjection\Container();
+        $controller->setContainer($container);
+
+        $response = $controller->delete($request, $block, $entityManager, $csrfManager, $userProvider);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(['message' => 'Impossible de supprimer le dernier Bloc.']),
+            $response->getContent()
+        );
+    }
+
 }

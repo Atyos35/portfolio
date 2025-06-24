@@ -12,6 +12,7 @@ interface TrainingItemProps {
   onDelete: (id: number) => void;
   showCheckIcon?: boolean;
   flash?: boolean;
+  canDelete: boolean;
 }
 
 const TrainingItem: React.FC<TrainingItemProps> = ({
@@ -19,7 +20,8 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
   onEdit,
   onDelete,
   showCheckIcon,
-  flash
+  flash,
+  canDelete
 }) => {
   const [expanded, setExpanded] = useState(false);
   return (
@@ -75,7 +77,9 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
               transition={{ duration: 0.3 }}
             >
               <EditButton onClick={() => onEdit(training)} />
-              <DeleteButton onClick={() => onDelete(training.id)} />
+              {canDelete && (
+                <DeleteButton onClick={() => onDelete(training.id)} />
+              )}
             </motion.div>
           )}
         </AnimatePresence>

@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 class ExperienceControllerTest extends TestCase
 {
@@ -148,5 +149,122 @@ class ExperienceControllerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+    }
+
+    public function testDeleteExperienceSuccess(): void
+    {
+        $experience = $this->createMock(Experience::class);
+
+        $csrfToken = 'valid_token';
+        $requestData = [
+            '_csrf_token' => $csrfToken,
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request->headers->set('X-CSRF-TOKEN', $csrfToken);
+
+        $csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrfManager->method('isTokenValid')
+            ->with(new CsrfToken('experience_form', $csrfToken))
+            ->willReturn(true);
+
+        $user = $this->createMock(User::class);
+        $user->method('getExperiences')->willReturn(
+            new \Doctrine\Common\Collections\ArrayCollection([
+                new \stdClass(), new \stdClass()
+            ])
+        );
+
+        $userProvider = $this->createMock(UserProvider::class);
+        $userProvider->method('getCurrentUser')->willReturn($user);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('remove')->with($experience);
+        $entityManager->expects($this->once())->method('flush');
+
+        $controller = new \App\Controller\ExperienceController();
+        $container = new \Symfony\Component\DependencyInjection\Container();
+        $controller->setContainer($container);
+
+        $response = $controller->delete($request, $experience, $entityManager, $csrfManager, $userProvider);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+    }
+
+    public function testDeleteExperienceInvalidCsrf(): void
+    {
+        $experience = $this->createMock(Experience::class);
+
+        $csrfToken = 'invalid_token';
+        $requestData = [
+            '_csrf_token' => $csrfToken,
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request->headers->set('X-CSRF-TOKEN', $csrfToken);
+
+        $csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrfManager->method('isTokenValid')
+            ->with(new CsrfToken('experience_form', $csrfToken))
+            ->willReturn(false);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+        $entityManager->expects($this->never())->method('flush');
+
+        $controller = new ExperienceController();
+        $container = new Container();
+        $controller->setContainer($container);
+
+        $response = $controller->delete($request, $experience, $entityManager, $csrfManager, $this->createMock(UserProvider::class));
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+    }
+
+    public function testDeleteExperienceFailsIfOnlyOneRemaining(): void
+    {
+        $experience = $this->createMock(Experience::class);
+
+        $csrfToken = 'valid_token';
+        $requestData = [
+            '_csrf_token' => $csrfToken,
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request->headers->set('X-CSRF-TOKEN', $csrfToken);
+
+        $csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrfManager->method('isTokenValid')
+            ->with(new CsrfToken('experience_form', $csrfToken))
+            ->willReturn(true);
+
+        $user = $this->createMock(User::class);
+        $user->method('getExperiences')->willReturn(
+            new \Doctrine\Common\Collections\ArrayCollection([
+                new \stdClass()
+            ])
+        );
+
+        $userProvider = $this->createMock(UserProvider::class);
+        $userProvider->method('getCurrentUser')->willReturn($user);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+        $entityManager->expects($this->never())->method('flush');
+
+        $controller = new \App\Controller\ExperienceController();
+        $container = new \Symfony\Component\DependencyInjection\Container();
+        $controller->setContainer($container);
+
+        $response = $controller->delete($request, $experience, $entityManager, $csrfManager, $userProvider);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(['message' => 'Impossible de supprimer la dernière expérience.']),
+            $response->getContent()
+        );
     }
 }

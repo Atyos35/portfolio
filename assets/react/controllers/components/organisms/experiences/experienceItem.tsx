@@ -12,6 +12,7 @@ interface ExperienceItemProps {
   onDelete: (id: number) => void;
   showCheckIcon?: boolean;
   flash?: boolean;
+  canDelete: boolean;
 }
 
 const ExperienceItem: React.FC<ExperienceItemProps> = ({
@@ -19,7 +20,8 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
   onEdit,
   onDelete,
   showCheckIcon,
-  flash
+  flash,
+  canDelete
 }) => {
   const [expanded, setExpanded] = useState(false);
   return (
@@ -75,7 +77,9 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
               transition={{ duration: 0.3 }}
             >
               <EditButton onClick={() => onEdit(experience)} />
-              <DeleteButton onClick={() => onDelete(experience.id)} />
+              {canDelete && (
+                <DeleteButton onClick={() => onDelete(experience.id)} />
+              )}
             </motion.div>
           )}
         </AnimatePresence>

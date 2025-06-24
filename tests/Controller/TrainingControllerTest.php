@@ -168,15 +168,25 @@ class TrainingControllerTest extends TestCase
             ->with(new CsrfToken('training_form', $csrfToken))
             ->willReturn(true);
 
+        $user = $this->createMock(User::class);
+        $user->method('getTrainings')->willReturn(
+            new \Doctrine\Common\Collections\ArrayCollection([
+                new \stdClass(), new \stdClass()
+            ])
+        );
+
+        $userProvider = $this->createMock(UserProvider::class);
+        $userProvider->method('getCurrentUser')->willReturn($user);
+
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('remove')->with($training);
         $entityManager->expects($this->once())->method('flush');
 
-        $controller = new TrainingController();
-        $container = new Container();
+        $controller = new \App\Controller\TrainingController();
+        $container = new \Symfony\Component\DependencyInjection\Container();
         $controller->setContainer($container);
 
-        $response = $controller->delete($request, $training, $entityManager, $csrfManager);
+        $response = $controller->delete($request, $training, $entityManager, $csrfManager, $userProvider);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
@@ -207,10 +217,55 @@ class TrainingControllerTest extends TestCase
         $container = new Container();
         $controller->setContainer($container);
 
-        $response = $controller->delete($request, $training, $entityManager, $csrfManager);
+        $response = $controller->delete($request, $training, $entityManager, $csrfManager, $this->createMock(UserProvider::class));
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+    }
+
+    public function testDeleteTrainingFailsIfOnlyOneRemaining(): void
+    {
+        $training = $this->createMock(Training::class);
+
+        $csrfToken = 'valid_token';
+        $requestData = [
+            '_csrf_token' => $csrfToken,
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request->headers->set('X-CSRF-TOKEN', $csrfToken);
+
+        $csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrfManager->method('isTokenValid')
+            ->with(new CsrfToken('training_form', $csrfToken))
+            ->willReturn(true);
+
+        $user = $this->createMock(User::class);
+        $user->method('getTrainings')->willReturn(
+            new \Doctrine\Common\Collections\ArrayCollection([
+                new \stdClass()
+            ])
+        );
+
+        $userProvider = $this->createMock(UserProvider::class);
+        $userProvider->method('getCurrentUser')->willReturn($user);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('remove');
+        $entityManager->expects($this->never())->method('flush');
+
+        $controller = new \App\Controller\TrainingController();
+        $container = new \Symfony\Component\DependencyInjection\Container();
+        $controller->setContainer($container);
+
+        $response = $controller->delete($request, $training, $entityManager, $csrfManager, $userProvider);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(['message' => 'Impossible de supprimer la dernière formation.']),
+            $response->getContent()
+        );
     }
 
 }

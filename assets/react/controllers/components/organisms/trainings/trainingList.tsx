@@ -15,8 +15,9 @@ const TrainingList: React.FC<TrainingListProps> = ({
   onEdit,
   onDeleted,
   editedTrainingId,
-  flashSuccessId
+  flashSuccessId,
 }) => {
+  const canDelete = trainings.length > 1;
   return (
     <div className="space-y-4">
       {trainings.map((training) => (
@@ -27,6 +28,7 @@ const TrainingList: React.FC<TrainingListProps> = ({
           onDelete={onDeleted}
           showCheckIcon={editedTrainingId === training.id}
           flash={flashSuccessId === training.id}
+          canDelete={canDelete}
         />
       ))}
     </div>

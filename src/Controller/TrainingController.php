@@ -130,7 +130,8 @@ final class TrainingController extends AbstractController
         Request $request,
         Training $training,
         EntityManagerInterface $entityManager,
-        CsrfTokenManagerInterface $csrfTokenManager): Response 
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserProvider $userProvider): Response 
     {
         $token = $request->headers->get('X-CSRF-TOKEN');
         $data = json_decode($request->getContent(), true);
@@ -139,6 +140,13 @@ final class TrainingController extends AbstractController
             return $this->json([
                 'message' => 'Jeton CSRF invalide.',
             ], Response::HTTP_FORBIDDEN);
+        }
+
+        $user = $userProvider->getCurrentUser();
+        if (count($user->getTrainings()) <= 1) {
+            return $this->json([
+                'message' => 'Impossible de supprimer la dernière formation.',
+            ], Response::HTTP_BAD_REQUEST);
         }
         
         $entityManager->remove($training);
