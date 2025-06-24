@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Experience } from '../../../models/experiences/experience.model';
 import { formatDuration } from '../../../utils/formatDuration';
 import DeleteButton from '../../atoms/deleteButton';
 import EditButton from '../../atoms/editButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import CheckIcon from '../../atoms/checkIcon';
+import ShowPwIcon from "../../../components/atoms/showPwIcon";
+import HidePwIcon from "../../../components/atoms/hidePwIcon";
 
 interface ExperienceItemProps {
   experience: Experience;
@@ -24,6 +26,7 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
   canDelete
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
   return (
     <motion.div
       initial={false}
@@ -37,22 +40,33 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
           {experience.company} - {experience.city}
         </p>
         <p className="text-xs text-gray-500">
-          {experience.start_date} - {experience.end_date}
+          {experience.start_date} - {experience.end_date || "Aujourd'hui"}
           {experience.duration && <> ({formatDuration(experience.duration)})</>}
         </p>
-        <div
-          className={`
-            experience-description text-sm text-gray-600 max-w-[31.25rem] 
-            ${expanded ? "" : "line-clamp-3 overflow-hidden"}
-          `}
-          dangerouslySetInnerHTML={{ __html: experience.description }}
-        />
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={expanded ? 'open' : 'closed'}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height: expanded ? 'auto' : 72,
+              opacity: 1,
+            }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div
+              ref={contentRef}
+              className="text-sm text-gray-600"
+              dangerouslySetInnerHTML={{ __html: experience.description }}
+            />
+          </motion.div>
+        </AnimatePresence>
         <button
           className="mt-1 text-blue-600 hover:underline text-sm"
           onClick={() => setExpanded(!expanded)}
-          aria-label={expanded ? "Réduire la description" : "Afficher plus"}
         >
-          {expanded ? "Voir moins" : "Voir plus"}
+          {expanded ? <HidePwIcon /> : <ShowPwIcon />}
         </button>
       </div>
       <div className="flex space-x-2">
