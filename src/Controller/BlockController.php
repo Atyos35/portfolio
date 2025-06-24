@@ -130,7 +130,8 @@ final class BlockController extends AbstractController
         Request $request,
         Block $block,
         EntityManagerInterface $entityManager,
-        CsrfTokenManagerInterface $csrfTokenManager): Response 
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserProvider $userProvider): Response 
     {
         $token = $request->headers->get('X-CSRF-TOKEN');
         $data = json_decode($request->getContent(), true);
@@ -139,6 +140,13 @@ final class BlockController extends AbstractController
             return $this->json([
                 'message' => 'Jeton CSRF invalide.',
             ], Response::HTTP_FORBIDDEN);
+        }
+
+        $user = $userProvider->getCurrentUser();
+        if (count($user->getBlocks()) <= 1) {
+            return $this->json([
+                'message' => 'Impossible de supprimer le dernier Bloc.',
+            ], Response::HTTP_BAD_REQUEST);
         }
         
         $entityManager->remove($block);

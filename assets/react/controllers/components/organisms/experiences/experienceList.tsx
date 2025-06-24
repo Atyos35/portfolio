@@ -15,8 +15,9 @@ const ExperienceList: React.FC<ExperienceListProps> = ({
   onDeleted,
   onEdit,
   editedExperienceId,
-  flashSuccessId
+  flashSuccessId,
 }) => {
+  const canDelete = experiences.length > 1;
   return (
     <div className="space-y-4">
       {experiences.map((experience) => (
@@ -27,6 +28,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({
           onEdit={onEdit}
           showCheckIcon={editedExperienceId === experience.id}
           flash={flashSuccessId === experience.id}
+          canDelete={canDelete}
         />
       ))}
     </div>
