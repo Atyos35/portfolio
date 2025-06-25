@@ -3,6 +3,7 @@ import { useRegisterForm } from "./useRegisterForm";
 import { motion } from "framer-motion";
 import HidePwIcon from '../components/atoms/hidePwIcon';
 import ShowPwIcon from '../components/atoms/showPwIcon';
+import Spinner from "../components/atoms/spinner";
 
 interface RegisterFormProps {
     action: string;
@@ -10,7 +11,7 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ action, csrfToken }: RegisterFormProps) {
-    const { register, handleSubmit, errors, onSubmit, watch } = useRegisterForm(action, csrfToken);
+    const { register, handleSubmit, errors, onSubmit, watch, isSubmitting, success, isRedirecting } = useRegisterForm(action, csrfToken);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -149,10 +150,20 @@ export default function RegisterForm({ action, csrfToken }: RegisterFormProps) {
                 </div>
 
                 <button
-                    type="submit"
-                    className="w-full py-2 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md"
+                type="submit"
+                disabled={isSubmitting || success}
+                className={`w-full py-2 mt-4 rounded-md font-semibold flex items-center justify-center transition 
+                    ${success ? "bg-green-600 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
                 >
-                    S'inscrire
+                {isSubmitting && !success ? (
+                    <Spinner className="h-5 w-5 text-white" />
+                ) : success && isRedirecting ? (
+                    "Redirection..."
+                ) : success ? (
+                    "Inscription réussie"
+                ) : (
+                    "S'inscrire"
+                )}
                 </button>
             </form>
             <div className="mt-4 text-center">

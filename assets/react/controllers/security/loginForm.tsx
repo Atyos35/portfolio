@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import ShowPwIcon from "../components/atoms/showPwIcon";
 import HidePwIcon from "../components/atoms/hidePwIcon";
+import Spinner from "../components/atoms/spinner";
 
 export interface LoginFormProps {
     action: string;
@@ -10,7 +11,7 @@ export interface LoginFormProps {
 }
 
 export default function LoginForm({ action, csrfToken }: LoginFormProps) {
-    const { register, handleSubmit, onSubmit, errorMessage  } = useLoginForm(action, csrfToken);
+    const { register, handleSubmit, onSubmit, errorMessage, isSubmitting  } = useLoginForm(action, csrfToken);
     const [showPassword, setShowPassword] = useState(false);
 
     return (
@@ -53,9 +54,10 @@ export default function LoginForm({ action, csrfToken }: LoginFormProps) {
 
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition flex justify-center items-center"
+                    disabled={isSubmitting}
                 >
-                    Se connecter
+                    {isSubmitting ? <Spinner className="h-5 w-5 text-white" /> : "Se connecter"}
                 </button>
             </form>
             <div className="mt-4 text-center">
