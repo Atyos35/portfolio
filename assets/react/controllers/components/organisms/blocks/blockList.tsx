@@ -52,7 +52,7 @@ const BlockList: React.FC<BlockListProps> = ({
       <div className="space-y-4">
         {mappedBlocks.map(block => (
           <Droppable key={block.id} id={block.id}>
-            <div className="flex items-center justify-between gap-4 w-full">
+            <div className="block flex items-center justify-between gap-4 w-full">
               <div className="flex-1">
                 <Draggable id={block.id}>
                   <BlockItem block={block} flash={flashSuccessId === block.id} />
