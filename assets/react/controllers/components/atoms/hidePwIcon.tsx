@@ -7,7 +7,7 @@ const HidePwIcon: React.FC<{ className?: string }> = ({ className = '' }) => {
     <img
       src={HidePw}
       alt="HidePw"
-      className={`w-5 h-5`}
+      className={`cursor-pointer w-5 h-5`}
     />
   );
 };
