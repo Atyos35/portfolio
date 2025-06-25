@@ -57,7 +57,7 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
           >
             <div
               ref={contentRef}
-              className="text-sm text-gray-600"
+              className="experience-description text-sm text-gray-600"
               dangerouslySetInnerHTML={{ __html: experience.description }}
             />
           </motion.div>
