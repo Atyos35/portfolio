@@ -57,7 +57,7 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
           >
             <div
               ref={contentRef}
-              className="text-sm text-gray-600"
+              className="training-description text-sm text-gray-600"
               dangerouslySetInnerHTML={{ __html: training.description }}
             />
           </motion.div>
