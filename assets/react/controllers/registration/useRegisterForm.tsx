@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import * as Turbo from "@hotwired/turbo";
-import { toast } from "react-hot-toast";
 
   const schema = z
     .object({
@@ -25,6 +24,8 @@ import { toast } from "react-hot-toast";
       path: ["confirmPassword"],
   });
 
+import { useState } from "react";
+
 export function useRegisterForm(action: string, csrfToken: string) {
   const {
     register,
@@ -35,40 +36,44 @@ export function useRegisterForm(action: string, csrfToken: string) {
     resolver: zodResolver(schema),
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const onSubmit = async (data: any) => {
     if (!csrfToken) {
       console.error("Token CSRF non disponible");
       return;
     }
 
+    setIsSubmitting(true);
+    setSuccess(false);
+
     const { confirmPassword, ...sendData } = data;
 
-    const fetchPromise = fetch(action, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...sendData, _csrf_token: csrfToken }),
-    }).then((response) => {
-      if (!response.ok) throw new Error("Erreur d'inscription");
-      return response;
-    });
-
-    toast.promise(fetchPromise, {
-      loading: "Inscription en cours...",
-      success: () => {
-        setTimeout(() => {
-          Turbo.visit("/login");
-        }, 1500);
-        return "Inscription réussie ! Redirection...";
-      },
-      error: "Échec de l'inscription. Veuillez réessayer.",
-    });
-
     try {
-      await fetchPromise;
+      const response = await fetch(action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...sendData, _csrf_token: csrfToken }),
+      });
+
+      if (!response.ok) throw new Error("Erreur d'inscription");
+
+      setSuccess(true);
+      setTimeout(() => {
+        setIsRedirecting(true);
+      }, 1000);
+
+      setTimeout(() => {
+        Turbo.visit("/login");
+      }, 2000);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  return { register, handleSubmit, watch, errors, onSubmit };
+  return { register, handleSubmit, watch, errors, onSubmit, isSubmitting, success, isRedirecting };
 }

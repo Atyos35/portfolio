@@ -6,6 +6,8 @@ import AddBlockModal from '../../components/organisms/blocks/addBlockModal';
 import EditBlockModal from '../../components/organisms/blocks/editBlockModal';
 import { deleteEntity } from '../../utils/deleteEntity';
 import DeleteModal from '../organisms/deleteModal';
+import Spinner from "../../components/atoms/spinner";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface BlockPageProps {
   blocks: Block[];
@@ -117,11 +119,20 @@ const handleReorderBlocks = async (updated: Block[]) => {
             onReorder={handleReorderBlocks}
           />
 
-          {isReordering && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-auto">
-              <div className="border-4 border-white border-t-orange-500 rounded-full w-12 h-12 animate-spin" />
-            </div>
-          )}
+          <AnimatePresence>
+            {isReordering && (
+              <motion.div
+                key="spinner"
+                className="absolute inset-1 z-20 flex items-center justify-center pointer-events-auto"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <Spinner className="w-12 h-12 text-blue-600" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         {isAddModalOpen && (
           <AddBlockModal

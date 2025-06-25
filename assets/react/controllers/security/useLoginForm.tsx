@@ -10,6 +10,7 @@ export function useLoginForm(action: string, csrfToken: string) {
     } = useForm();
 
     const [errorMessage, setErrorMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false); // 👈
 
     const onSubmit = async (data: any) => {
         setErrorMessage("");
@@ -17,6 +18,8 @@ export function useLoginForm(action: string, csrfToken: string) {
             console.error("Token CSRF non disponible");
             return;
         }
+
+        setIsSubmitting(true);
 
         try {
             const response = await fetch(action, {
@@ -29,14 +32,16 @@ export function useLoginForm(action: string, csrfToken: string) {
 
             if (!response.ok) {
                 setErrorMessage(json.message || "Identifiants incorrects.");
+                setIsSubmitting(false);
                 return;
             }
 
             Turbo.visit("/");
         } catch (error) {
             console.error("Erreur de soumission :", error);
+            setIsSubmitting(false);
         }
     };
 
-    return { register, handleSubmit, errors, onSubmit, errorMessage };
+    return { register, handleSubmit, errors, onSubmit, errorMessage, isSubmitting };
 }
