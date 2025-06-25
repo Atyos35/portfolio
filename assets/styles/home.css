@@ -76,3 +76,7 @@ header, header * {
 .training-description li {
   margin-bottom: 0.25rem;
 }
+
+.block {
+  touch-action: none;
+}
