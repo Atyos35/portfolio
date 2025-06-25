@@ -7,7 +7,7 @@ const CheckIcon: React.FC<{ className?: string }> = ({ className = '' }) => {
     <img
       src={ShowPw}
       alt="ShowPw"
-      className={'w-5 h-5'}
+      className={'cursor-pointer w-5 h-5'}
     />
   );
 };

@@ -63,7 +63,7 @@ const TrainingItem: React.FC<TrainingItemProps> = ({
           </motion.div>
         </AnimatePresence>
         <button
-          className="mt-1 text-blue-600 hover:underline text-sm"
+          className="mt-2 text-blue-600 hover:underline text-sm"
           onClick={() => setExpanded(!expanded)}
         >
           {expanded ? <HidePwIcon /> : <ShowPwIcon />}
