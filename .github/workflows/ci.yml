@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "APP_ENV=test" > .env.test
           echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env.test
-          echo "DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}" >> .env.test
+          echo "DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=5.7" >> .env.test
 
       - name: Wait for MySQL
         run: |
@@ -46,6 +46,9 @@ jobs:
             echo "Waiting for MySQL..."
             sleep 5
           done
+
+      - name: Debug DB connection
+        run: php bin/console doctrine:database:connect --env=test
 
       - name: Run migrations
         run: php bin/console doctrine:migrations:migrate --no-interaction
