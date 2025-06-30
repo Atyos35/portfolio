@@ -36,6 +36,7 @@
             <directory>src/DataFixtures</directory>
             <directory>src/Controller/SecurityController</directory>
             <directory>src/Controller/RegistrationController</directory>
+            <directory>src/Controller/HomeController</directory>
         </exclude>
         <report>
             <text output="coverage.txt"/>
