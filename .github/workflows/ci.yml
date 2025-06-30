@@ -50,9 +50,6 @@ jobs:
             sleep 5
           done
 
-      - name: List files
-        run: ls -al bin/
-
       - name: Run fixtures
         run: php bin/console doctrine:fixtures:load --env=test --no-interaction
 
