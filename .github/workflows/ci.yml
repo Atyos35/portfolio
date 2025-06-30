@@ -1,82 +1,87 @@
-name: CI
+name: Run PHPUnit Tests with Coverage
 
 on:
-  push:
+  pull_request:
     branches:
-      - main
-  pull_request: ~
-  workflow_dispatch: ~
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+      - master
 
 jobs:
-  tests:
-    name: Tests
+  test:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        ports: ['3306:3306']
+
     env:
-      KERNEL_CLASS: 'App\Kernel'
+      APP_ENV: test
       APP_SECRET: ${{ secrets.APP_SECRET }}
-      SYMFONY_DEPRECATIONS_HELPER: 999999
-      MYSQL_USER: ${{ secrets.MYSQL_USER }}
-      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-      MYSQL_VERSION: 8.4.4
-      DATABASE_URL: mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@localhost:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=8&charset=utf8
-      MAILER_DSN: smtp://localhost:1025
+
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Build Docker images
-        uses: docker/bake-action@v6
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          pull: true
-          load: true
-          files: |
-            compose.yaml
-            compose.override.yaml
-          set: |
-            *.cache-from=type=gha,scope=${{github.ref}}
-            *.cache-from=type=gha,scope=refs/heads/main
-            *.cache-to=type=gha,scope=${{github.ref}},mode=max
-      -
-        name: Start services
-        run: docker compose up --no-build
-      -
-        name: Check HTTP reachability
-        run: curl -v --fail-with-body http://localhost
-      -
-        name: Check HTTPS reachability
-        if: false # Remove this line when the homepage will be configured, or change the path to check
-        run: curl -vk --fail-with-body https://localhost
-      -
-        name: Check Mercure reachability
-        run: curl -vkI --fail-with-body https://localhost/.well-known/mercure?topic=test
-      -
-        name: Create test database
-        run: docker compose exec -T php bin/console -e test doctrine:database:create
-      -
-        name: Run migrations
-        run: docker compose exec -T php bin/console -e test doctrine:migrations:migrate --no-interaction
-      -
-        name: Run PHPUnit
-        run: docker compose exec -T php bin/phpunit
-      -
-        name: Doctrine Schema Validator
-        run: docker compose exec -T php bin/console -e test doctrine:schema:validate
-  lint:
-    name: Docker Lint
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Lint Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
+          php-version: 8.3.17
+          extensions: mbstring, pdo, pdo_mysql, apcu, intl, opcache, zip
+          coverage: xdebug
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Create .env.test
+        run: |
+          cat <<EOF > .env.test
+            APP_ENV=test
+            APP_SECRET=${{ secrets.APP_SECRET }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            MYSQL_VERSION=5.7
+            DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=5.7&charset=utf8
+          EOF
+
+      - name: Copy .env.test to .env
+        run: cp .env.test .env
+
+      - name: Show .env.test content
+        run: cat .env.test
+
+      - name: Wait for MySQL
+        run: |
+          sudo apt-get install -y mysql-client
+          until mysqladmin ping -h 127.0.0.1 -uroot -p${{ secrets.MYSQL_PASSWORD }} --silent; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
+
+      - name: Create test database
+        run: php bin/console d:d:c --env=test --no-interaction
+
+      - name: Create test schema
+        run: php bin/console d:s:c --env=test --no-interaction
+
+      - name: Run fixtures
+        run: php bin/console doctrine:fixtures:load --env=test --no-interaction
+
+      - name: Run PHPUnit with coverage
+        run: ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(php -r '
+            $xml = simplexml_load_file("coverage.xml");
+            $metrics = $xml->project->metrics;
+            $covered = (int)$metrics["coveredstatements"];
+            $total = (int)$metrics["statements"];
+            echo round(($covered / $total) * 100, 2);
+          ')
+          echo "Coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Test coverage is below 80% ($COVERAGE%)"
+            exit 1
+          fi
