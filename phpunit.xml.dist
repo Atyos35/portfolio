@@ -34,6 +34,8 @@
             <directory>src/Repository</directory>
             <directory>src/Form</directory>
             <directory>src/DataFixtures</directory>
+            <directory>src/Controller/SecurityController</directory>
+            <directory>src/Controller/RegistrationController</directory>
         </exclude>
         <report>
             <text output="coverage.txt"/>

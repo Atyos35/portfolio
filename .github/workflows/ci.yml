@@ -68,6 +68,9 @@ jobs:
       - name: Run fixtures
         run: php bin/console doctrine:fixtures:load --env=test --no-interaction
 
+      - name: Run npm uild
+        run: npm run build
+
       - name: Run PHPUnit with coverage
         run: ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
 
