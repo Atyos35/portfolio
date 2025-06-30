@@ -1,4 +1,4 @@
-#syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1
 
 FROM dunglas/frankenphp:1-php8.3 AS frankenphp_upstream
 
@@ -13,6 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     file \
     gettext \
     git \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    libzip-dev \
+    libexif-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
@@ -21,7 +27,10 @@ RUN set -eux; \
         apcu \
         intl \
         opcache \
-        zip
+        zip \
+        gd \
+        exif \
+        fileinfo
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"

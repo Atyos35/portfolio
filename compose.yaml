@@ -7,6 +7,7 @@ services:
     restart: unless-stopped
     networks:
       - database_network
+      - puppeteer_network
     environment:
       SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
       MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
@@ -57,6 +58,16 @@ services:
     volumes:
       - database_data:/var/lib/mysql:rw
 
+  puppeteer:
+    image: browserless/chrome:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - CONNECTION_TIMEOUT=60000
+      - MAX_CONCURRENT_SESSIONS=5
+      - TOKEN=secret-token
+
   mailer:
     image: axllent/mailpit
     restart: unless-stopped
@@ -78,4 +89,6 @@ volumes:
 
 networks:
   database_network:
+    driver: bridge
+  puppeteer_network:
     driver: bridge

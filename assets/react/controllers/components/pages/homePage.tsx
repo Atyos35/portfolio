@@ -60,7 +60,7 @@ export default function HomePage({
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <div className="max-w-6xl mx-auto border border-gray-300 bg-white rounded-2xl p-6 lg:p-8 section-background">
+          <div className="cv max-w-6xl mx-auto border border-gray-300 bg-white rounded-2xl p-6 lg:p-8 section-background">
             <div className="flex flex-col gap-8">
               <UserPage onUserUpdate={setCurrentUser} editUserAction={editUserAction} user={currentUser} csrfToken={csrfTokens.user} />
               <div className="flex flex-col lg:flex-row gap-8">
