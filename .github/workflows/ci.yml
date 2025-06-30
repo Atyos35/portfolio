@@ -59,6 +59,12 @@ jobs:
             sleep 5
           done
 
+      - name: Create test database
+        run: php bin/console d:d:c --env=test --no-interaction
+
+      - name: Create test schema
+        run: php bin/console d:s:c --force --env=test --no-interaction
+
       - name: Run fixtures
         run: php bin/console doctrine:fixtures:load --env=test --no-interaction
 
