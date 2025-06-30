@@ -39,6 +39,9 @@ jobs:
           echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env.test
           echo "DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=5.7" >> .env.test
 
+      - name: Copy .env.test to .env
+        run: cp .env.test .env
+
       - name: Wait for MySQL
         run: |
           sudo apt-get install -y mysql-client
@@ -48,7 +51,7 @@ jobs:
           done
 
       - name: List files
-        run: ls -al
+        run: ls -al bin/
 
       - name: Run fixtures
         run: php bin/console doctrine:fixtures:load --env=test --no-interaction
