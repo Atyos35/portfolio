@@ -80,7 +80,10 @@ jobs:
         run: npm run build
 
       - name: Run PHPUnit with coverage
-        run: ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml -v
+        run: |
+          ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml -v
+          echo "Generated coverage.xml:"
+          cat coverage.xml || echo "No coverage.xml file generated"
 
       - name: Check coverage threshold
         run: |
