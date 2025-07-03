@@ -80,22 +80,46 @@ jobs:
         run: npm run build
 
       - name: Run PHPUnit with coverage
-        run: |
-          ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml -v
-          echo "Generated coverage.xml:"
-          cat coverage.xml || echo "No coverage.xml file generated"
+        run: ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml -v
 
       - name: Check coverage threshold
         run: |
+          if [ ! -f "coverage.xml" ]; then
+            echo "❌ coverage.xml file not found."
+            exit 1
+          fi
+
           COVERAGE=$(php -r '
+            libxml_use_internal_errors(true);
             $xml = simplexml_load_file("coverage.xml");
+            if (!$xml) {
+              echo "❌ Invalid XML file.";
+              exit(1);
+            }
             $metrics = $xml->project->metrics;
+            if (!$metrics) {
+              echo "❌ No <metrics> found in coverage.xml";
+              exit(1);
+            }
             $covered = (int)$metrics["coveredstatements"];
             $total = (int)$metrics["statements"];
+            if ($total === 0) {
+              echo "❌ Total statements is zero.";
+              exit(1);
+            }
             echo round(($covered / $total) * 100, 2);
           ')
-          echo "Coverage: $COVERAGE%"
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "Test coverage is below 80% ($COVERAGE%)"
+
+          echo "📊 Coverage: $COVERAGE%"
+
+          if [[ "$COVERAGE" == \❌* ]]; then
+            echo "❌ Failed to calculate test coverage properly."
             exit 1
+          fi
+
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "❌ Test coverage is below 80% ($COVERAGE%)"
+            exit 1
+          else
+            echo "✅ Test coverage threshold met."
           fi
