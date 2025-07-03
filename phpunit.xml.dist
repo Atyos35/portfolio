@@ -42,10 +42,10 @@
         <report>
             <text outputFile="coverage.txt"/>
             <clover outputFile="coverage.xml"/>
+            <limit>
+                <line>80</line>
+            </limit>
         </report>
-        <limit>
-            <line>80</line>
-        </limit>
     </coverage>
 
     <listeners>
