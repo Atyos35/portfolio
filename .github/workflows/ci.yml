@@ -80,31 +80,15 @@ jobs:
         run: npm run build
 
       - name: Run PHPUnit with coverage
-        run: ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+        run: ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml -v
 
       - name: Check coverage threshold
         run: |
-          echo "=== coverage.xml content ==="
-          cat coverage.xml
-          echo "============================"
-
           COVERAGE=$(php -r '
             $xml = simplexml_load_file("coverage.xml");
-            if (!$xml) {
-                fwrite(STDERR, "Failed to load coverage.xml\n");
-                exit(1);
-            }
             $metrics = $xml->project->metrics;
-            if (!$metrics) {
-                fwrite(STDERR, "Metrics not found in coverage.xml\n");
-                exit(1);
-            }
-            $covered = floatval($metrics["coveredstatements"]);
-            $total = floatval($metrics["statements"]);
-            if ($total == 0) {
-                fwrite(STDERR, "No statements found in coverage.xml\n");
-                exit(1);
-            }
+            $covered = (int)$metrics["coveredstatements"];
+            $total = (int)$metrics["statements"];
             echo round(($covered / $total) * 100, 2);
           ')
           echo "Coverage: $COVERAGE%"
