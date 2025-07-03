@@ -40,8 +40,8 @@
             <file>src/Kernel.php</file>
         </exclude>
         <report>
-            <text output="coverage.txt"/>
-            <clover output="coverage.xml"/>
+            <text outputFile="coverage.txt"/>
+            <clover outputFile="coverage.xml"/>
         </report>
     </coverage>
 
