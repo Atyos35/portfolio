@@ -35,6 +35,7 @@
             <directory>src/Form</directory>
             <directory>src/DataFixtures</directory>
             <directory>src/Entity</directory>
+            <file>src/Controller/RegistrationController.php</file>
             <file>src/Kernel.php</file>
         </exclude>
         <report>
