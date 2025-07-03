@@ -43,6 +43,9 @@
             <text outputFile="coverage.txt"/>
             <clover outputFile="coverage.xml"/>
         </report>
+        <limit>
+            <line>80</line>
+        </limit>
     </coverage>
 
     <listeners>
