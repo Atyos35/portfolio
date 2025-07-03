@@ -65,7 +65,7 @@ class RegistrationController extends AbstractController
             $this->initialDatasForUserService->createInitialDatasForUser($user);
 
         }
-        $this->addFlash('email', $user->getEmail());
+
         return $this->json([
             'message' => 'Inscription réussie',
             'user' => ['id' => $user->getId(), 'email' => $user->getEmail()]

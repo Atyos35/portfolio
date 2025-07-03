@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Entity\User;
 
-final class UserService
+class UserService
 {
     public function formatUserData(User $user): array
     {

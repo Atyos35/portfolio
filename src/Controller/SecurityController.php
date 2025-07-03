@@ -15,13 +15,13 @@ class SecurityController extends AbstractController
         Request $request,
         Security $security
     ): Response {
-        if ($security->getUser() && $security->getUser()->isVerified()) {
+        if ($security->getUser()) {
             return $this->redirectToRoute('app_home');
         }
         if ($request->isMethod('GET')) {
             return $this->render('security/login.html.twig');
         }
-        return new Response('Erreur lors de la connexion', Response::HTTP_BAD_REQUEST);
+        return new Response('Authentification requise', Response::HTTP_UNAUTHORIZED);
     }
 
     #[Route(path: '/logout', name: 'app_logout')]
