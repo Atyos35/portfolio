@@ -19,9 +19,12 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+    ports:
+      - "80:80"
+      # - "443:443"
 
   database:
-    image: mysql:${MYSQL_VERSION}
+    image: mysql:5.7.40
     restart: always
     networks:
       - backend
@@ -31,7 +34,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: root
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       timeout: 5s
