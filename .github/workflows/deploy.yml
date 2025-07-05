@@ -46,17 +46,25 @@ jobs:
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.RASPBERRY_USER }}@${{ secrets.RASPBERRY_HOST }} << EOF
           set -e
           cd /var/www/cv-maker    
-          cat > .env << EOL
-          SERVER_NAME=92.162.186.29
-          CADDY_MERCURE_JWT_SECRET=${{ secrets.CADDY_MERCURE_JWT_SECRET }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          MERCURE_URL=http://localhost/.well-known/mercure
-          MERCURE_PUBLIC_URL=http://92.162.186.29/.well-known/mercure
-          MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER=${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          EOL    
-              echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-              docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
-              docker compose -f compose-prod.yml up -d --remove-orphans
-          EOF
+  
+          echo "📄 Création du fichier .env"
+          cat > .env <<EOL
+            SERVER_NAME=92.162.186.29
+            CADDY_MERCURE_JWT_SECRET=${{ secrets.CADDY_MERCURE_JWT_SECRET }}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            MERCURE_URL=http://localhost/.well-known/mercure
+            MERCURE_PUBLIC_URL=http://92.162.186.29/.well-known/mercure
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            EOL
+        
+                echo "🔐 Connexion à GHCR"
+                echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        
+                echo "📦 Pull image"
+                docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
+        
+                echo "🚀 Docker Compose up"
+                docker compose -f compose-prod.yml up -d --remove-orphans
+            EOF
