@@ -51,5 +51,5 @@ jobs:
 
             docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
 
-            docker compose -f docker-compose-prod.yml up -d --remove-orphans
+            docker compose -f compose-prod.yml up -d --remove-orphans
             EOF
