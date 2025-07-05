@@ -43,13 +43,13 @@ jobs:
 
       - name: Deploy to Raspberry Pi using Docker Compose
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.RASPBERRY_USER }}@${{ secrets.RASPBERRY_HOST }} << 'EOF'
+            ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.RASPBERRY_USER }}@${{ secrets.RASPBERRY_HOST }} << EOF
             set -e
-            cd /home/${RASPBERRY_USER}/portfolio
+            cd /home/${{ secrets.RASPBERRY_USER }}/portfolio
 
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
             docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
 
             docker compose -f docker-compose-prod.yml up -d --remove-orphans
-          EOF
+            EOF
