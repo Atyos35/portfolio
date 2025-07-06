@@ -9,14 +9,15 @@ WORKDIR /app
 
 VOLUME /app/var/
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     acl \
     file \
     gettext \
     git \
     curl \
     unzip \
-    libzip-dev
+    libzip-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
     install-php-extensions \
@@ -37,7 +38,7 @@ ENTRYPOINT ["docker-entrypoint"]
 HEALTHCHECK --start-period=60s CMD curl -f http://localhost:2019/metrics || exit 1
 CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
 
-# --------- Environnement de développement ---------
+# --------- Dev ---------
 FROM frankenphp_base AS frankenphp_dev
 
 ENV APP_ENV=dev XDEBUG_MODE=off
@@ -50,19 +51,18 @@ COPY --link frankenphp/conf.d/20-app.dev.ini $PHP_INI_DIR/app.conf.d/
 
 CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--watch" ]
 
-# --------- Environnement de production ---------
+# --------- Prod ---------
 FROM frankenphp_base AS frankenphp_prod
 
 ENV APP_ENV=prod
-ENV FRANKENPHP_CONFIG="import worker.Caddyfile"
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-COPY --link frankenphp/conf.d/20-app.prod.ini $PHP_INI_DIR/app.conf.d/
-COPY --link frankenphp/worker.Caddyfile /etc/caddy/worker.Caddyfile
+RUN rm -f /usr/local/bin/docker-entrypoint \
+       /etc/caddy/Caddyfile \
+       /etc/caddy/worker.Caddyfile
 
 COPY --link composer.* symfony.* ./
-
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader
 
 COPY --link . ./
@@ -72,3 +72,5 @@ RUN mkdir -p var/cache var/log && \
     composer dump-env prod && \
     composer run-script --no-dev post-install-cmd && \
     chmod +x bin/console && sync
+
+CMD ["php-fpm"]
