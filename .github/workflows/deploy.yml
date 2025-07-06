@@ -22,11 +22,10 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker image for ARM64 from frankenphp_prod
+      - name: Build Docker image for ARM64
         run: |
           docker build \
             --platform linux/arm64/v8 \
-            --target frankenphp_prod \
             -t ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest .
 
       - name: Push Docker image to GHCR
