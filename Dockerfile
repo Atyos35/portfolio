@@ -2,7 +2,7 @@
 
 FROM php:8.3-fpm AS base
 
-RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     acl \
     file \
     gettext \
