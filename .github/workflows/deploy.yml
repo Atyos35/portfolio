@@ -22,8 +22,8 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker image
-        run: docker build -t ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest .
+      - name: Build Docker image for ARM64
+        run: docker build --platform linux/arm64 -t ghcr.io/${{ github.repository_owner }}/cv-maker:latest .
 
       - name: Push Docker image to GHCR
         run: docker push ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
@@ -58,12 +58,12 @@ jobs:
           MYSQL_USER=${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
           EOL
-            echo "🔐 Connexion à GHCR"
+            echo "Connexion à GHCR"
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     
-            echo "📦 Pull image"
+            echo "Pull image"
             docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
     
-            echo "🚀 Docker Compose up"
-            docker compose -f compose-prod.yml up -d --remove-orphans
+            echo "Docker Compose up"
+            docker compose -f compose-prod.yml up -d --force-recreate --remove-orphans
           EOF
