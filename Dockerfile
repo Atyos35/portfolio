@@ -1,14 +1,6 @@
-# syntax=docker/dockerfile:1
+FROM php:8.3-fpm AS base
 
-FROM dunglas/frankenphp:1-php8.3 AS frankenphp_upstream
-
-# --------- Base commune ---------
-FROM frankenphp_upstream AS frankenphp_base
-
-WORKDIR /app
-
-VOLUME /app/var/
-
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     acl \
     file \
@@ -17,26 +9,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
     libzip-dev \
+    libicu-dev \
+    libonig-dev \
+    libxml2-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN set -eux; \
-    install-php-extensions \
-        @composer \
-        apcu \
-        intl \
-        opcache \
-        zip
+# Install PHP extensions
+RUN docker-php-ext-install \
+    intl \
+    opcache \
+    zip
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-COPY --link frankenphp/conf.d/10-app.ini $PHP_INI_DIR/app.conf.d/
-COPY --link --chmod=755 frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-COPY --link frankenphp/Caddyfile /etc/caddy/Caddyfile
+WORKDIR /app
 
-ENTRYPOINT ["docker-entrypoint"]
-HEALTHCHECK --start-period=60s CMD curl -f http://localhost:2019/metrics || exit 1
-CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
+# Copie application (composer.* d'abord pour cache build)
+COPY composer.* symfony.* ./
+RUN composer install --no-dev --optimize-autoloader
+
+COPY . .
+
+RUN mkdir -p var/cache var/log && \
+    composer dump-env prod && \
+    composer run-script --no-dev post-install-cmd && \
+    chmod +x bin/console && sync
+
+CMD ["php-fpm"]
 
 # --------- Dev ---------
 FROM frankenphp_base AS frankenphp_dev
