@@ -9,15 +9,14 @@ WORKDIR /app
 
 VOLUME /app/var/
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apk add --no-cache \
     acl \
     file \
     gettext \
     git \
     curl \
     unzip \
-    libzip-dev \
-    && rm -rf /var/lib/apt/lists/*
+    libzip-dev
 
 RUN set -eux; \
     install-php-extensions \
