@@ -23,7 +23,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image for ARM64
-        run: docker build --platform linux/arm64 -t ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest .
+        run: docker build --platform linux/arm64/v8 -t ghcr.io/${{ github.repository_owner }}/cv-maker:latest .
 
       - name: Push Docker image to GHCR
         run: docker push ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
@@ -47,7 +47,7 @@ jobs:
           set -e
           cd /var/www/cv-maker    
   
-          echo "📄 Création du fichier .env"
+          echo "Création du fichier .env"
           cat > .env << EOL
           SERVER_NAME=92.162.186.29
           CADDY_MERCURE_JWT_SECRET=${{ secrets.CADDY_MERCURE_JWT_SECRET }}

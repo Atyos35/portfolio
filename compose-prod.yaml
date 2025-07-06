@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   php:
-    image: ghcr.io/valerianguemene/cv-maker:latest
+    image: ghcr.io/atyos35/cv-maker:latest
     restart: always
     networks:
       - backend
@@ -24,7 +24,7 @@ services:
       # - "443:443"
 
   database:
-    image: mysql:5.7.40
+    image: mysql:8
     restart: always
     networks:
       - backend
