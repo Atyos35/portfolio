@@ -66,12 +66,13 @@ jobs:
           cat > .env << EOL
           SERVER_NAME=92.162.186.29
           CADDY_MERCURE_JWT_SECRET=${{ secrets.CADDY_MERCURE_JWT_SECRET }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@database:3306/${{ secrets.MYSQL_DATABASE }}
           MERCURE_URL=http://localhost/.well-known/mercure
           MERCURE_PUBLIC_URL=http://92.162.186.29/.well-known/mercure
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
           MYSQL_USER=${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
           EOL
 
           echo "Connexion à GHCR"
