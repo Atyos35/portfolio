@@ -29,9 +29,9 @@ WORKDIR /app
 
 COPY composer.* symfony.* ./
 
-RUN composer install --no-dev --no-interaction --optimize-autoloader
-
 COPY . .
+
+RUN composer install --no-dev --no-interaction --optimize-autoloader
 
 RUN mkdir -p var/cache var/log && \
     composer dump-env prod && \
