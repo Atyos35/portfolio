@@ -29,6 +29,9 @@ WORKDIR /app
 
 COPY composer.* symfony.* ./
 
+ENV APP_ENV=prod
+ENV SYMFONY_SKIP_AUTO_RUN=1
+
 COPY . .
 
 RUN composer install --no-dev --no-interaction --optimize-autoloader

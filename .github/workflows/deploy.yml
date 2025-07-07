@@ -37,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          platforms: linux/arm64
+          platforms: linux/arm64/v8
           push: true
           tags: ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
           cache-from: type=gha
