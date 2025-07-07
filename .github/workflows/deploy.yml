@@ -22,6 +22,22 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-php-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Debug build manually
+        run: |
+          docker buildx build \
+            --platform linux/arm64 \
+            --no-cache \
+            --progress=plain \
+            .
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -32,6 +48,8 @@ jobs:
           platforms: linux/arm64
           push: true
           tags: ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build-and-push

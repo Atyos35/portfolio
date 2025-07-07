@@ -27,11 +27,11 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-COPY . .
-
 COPY composer.* symfony.* ./
 
 RUN composer install --no-dev --no-interaction --optimize-autoloader
+
+COPY . .
 
 RUN mkdir -p var/cache var/log && \
     composer dump-env prod && \
