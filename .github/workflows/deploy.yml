@@ -70,7 +70,6 @@ jobs:
           MERCURE_URL=http://localhost/.well-known/mercure
           MERCURE_PUBLIC_URL=http://92.162.186.29/.well-known/mercure
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER=${{ secrets.MYSQL_USER }}
           MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
           EOL
 
