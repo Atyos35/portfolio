@@ -35,9 +35,4 @@ COPY . .
 
 RUN composer install --no-interaction --optimize-autoloader
 
-RUN mkdir -p var/cache var/log && \
-    composer dump-env prod && \
-    composer run-script --no-dev post-install-cmd && \
-    chmod +x bin/console && sync
-
 CMD ["php-fpm"]
