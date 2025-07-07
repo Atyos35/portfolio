@@ -35,9 +35,12 @@ COPY . .
 
 RUN composer install --no-interaction --optimize-autoloader
 
-RUN mkdir -p var/cache var/log && \
-    composer dump-env prod && \
-    composer run-script --no-dev post-install-cmd && \
-    chmod +x bin/console && sync
+RUN mkdir -p var/cache var/log var/sessions \
+ && composer dump-env prod \
+ && composer run-script --no-dev post-install-cmd \
+ && chmod +x bin/console \
+ && chown -R www-data:www-data var \
+ && chmod -R 775 var \
+ && sync
 
 CMD ["php-fpm"]
