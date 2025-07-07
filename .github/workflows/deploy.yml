@@ -71,6 +71,7 @@ jobs:
           MERCURE_PUBLIC_URL=http://92.162.186.29/.well-known/mercure
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
           MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+          APP_SECRET=${{ secrets.APP_SECRET }}
           EOL
 
           echo "Connexion à GHCR"
