@@ -25,8 +25,13 @@ RUN docker-php-ext-install \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN curl -fsSL https://get.nodejs.org | bash - \
- && apt-get install -y nodejs
+RUN curl -fsSL https://nodejs.org/dist/v22.14.0/node-v22.14.0-linux-x64.tar.xz -o node.tar.xz \
+ && mkdir -p /usr/local/lib/nodejs \
+ && tar -xJf node.tar.xz -C /usr/local/lib/nodejs \
+ && rm node.tar.xz \
+ && ln -s /usr/local/lib/nodejs/node-v22.14.0-linux-x64/bin/node /usr/bin/node \
+ && ln -s /usr/local/lib/nodejs/node-v22.14.0-linux-x64/bin/npm /usr/bin/npm \
+ && ln -s /usr/local/lib/nodejs/node-v22.14.0-linux-x64/bin/npx /usr/bin/npx
 
 WORKDIR /app
 
