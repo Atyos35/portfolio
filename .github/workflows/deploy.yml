@@ -79,12 +79,7 @@ jobs:
 
           echo "Pull image"
           docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
-
-          echo "Copie des assets public/build"
-          docker create --name extract-assets ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
-          docker cp extract-assets:/app/public/build ./app/public/build
-          docker rm extract-assets
-
+          
           echo "Docker Compose up"
           docker compose -f compose-prod.yml up -d --remove-orphans
           EOF
