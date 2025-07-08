@@ -25,15 +25,18 @@ RUN docker-php-ext-install \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+ && apt-get install -y nodejs
+
 WORKDIR /app
 
 COPY composer.* symfony.* ./
 
-ENV APP_ENV=dev
-
 COPY . .
 
 RUN composer install --no-interaction --optimize-autoloader
+RUN npm ci
+RUN npm run build
 
 RUN mkdir -p var/cache var/log var/sessions \
  && composer dump-env prod \
