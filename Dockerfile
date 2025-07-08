@@ -25,7 +25,7 @@ RUN docker-php-ext-install \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+RUN curl -fsSL https://get.nodejs.org | bash - \
  && apt-get install -y nodejs
 
 WORKDIR /app
