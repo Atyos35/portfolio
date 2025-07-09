@@ -39,7 +39,7 @@ jobs:
           context: .
           platforms: linux/arm64/v8
           push: true
-          tags: ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
+          tags: ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:v2
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
