@@ -11,6 +11,8 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,6 +20,10 @@ jobs:
       - name: Lowercase repository_owner
         id: lowercase
         run: echo "repo_lower=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Generate image tag
+        id: version
+        run: echo "tag=v$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -39,7 +45,9 @@ jobs:
           context: .
           platforms: linux/arm64/v8
           push: true
-          tags: ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:v2
+          tags: |
+            ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
+            ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:${{ steps.version.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -77,9 +85,16 @@ jobs:
           echo "Connexion à GHCR"
           echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+          echo "Nettoyage Docker (containers et volumes orphelins)"
+          docker container prune -f
+          docker volume prune -f
+
+          echo "Mise à jour du tag dans compose-prod.yml"
+          sed -i 's|image: ghcr.io/.*/cv-maker:.*|image: ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:${{ needs.build-and-push.outputs.image_tag }}|' compose-prod.yml
+
           echo "Pull image"
-          docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:latest
-          
+          docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:${{ needs.build-and-push.outputs.image_tag }}
+
           echo "Docker Compose up"
           docker compose -f compose-prod.yml up -d --remove-orphans
           EOF
