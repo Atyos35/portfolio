@@ -42,10 +42,7 @@ COPY . .
 RUN composer install --no-interaction --optimize-autoloader
 RUN npm ci
 RUN npm run build
-
-RUN cp -r public /app/public
 RUN ls -al public/build
-
 
 RUN mkdir -p var/cache var/log var/sessions \
  && composer dump-env prod \
