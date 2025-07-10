@@ -95,9 +95,11 @@ jobs:
           echo "Pull image"
           docker pull ghcr.io/${{ steps.lowercase.outputs.repo_lower }}/cv-maker:${{ needs.build-and-push.outputs.image_tag }}
 
-          echo "Run Doctrine Migrations"
-          docker compose exec -T php php bin/console doctrine:migrations:migrate --no-interaction
-
           echo "Docker Compose up"
           docker compose -f compose-prod.yml up -d --remove-orphans
+
+          echo "Run Doctrine Migrations"
+          docker compose exec -T php php bin/console doctrine:migrations:status | grep 'New Migrations' | grep -q '0' || \
+          docker compose exec -T php php bin/console doctrine:migrations:migrate --no-interaction
+
           EOF
