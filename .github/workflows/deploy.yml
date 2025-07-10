@@ -74,7 +74,7 @@ jobs:
           cat > .env << EOL
           SERVER_NAME=92.162.186.29
           CADDY_MERCURE_JWT_SECRET=${{ secrets.CADDY_MERCURE_JWT_SECRET }}
-          DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@database:3306/${{ secrets.MYSQL_DATABASE }}?charset=utf8mb4"
+          DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@database:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=${{ secrets.MYSQL_VERSION }}?charset=utf8mb4"
           MERCURE_URL=http://localhost/.well-known/mercure
           MERCURE_PUBLIC_URL=http://92.162.186.29/.well-known/mercure
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
