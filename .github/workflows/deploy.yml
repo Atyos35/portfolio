@@ -99,7 +99,6 @@ jobs:
           docker compose -f compose-prod.yml up -d --remove-orphans
 
           echo "Exécution de la migration Doctrine"
-          container_id=$(docker ps -qf "name=cv-maker-php")
-          docker exec -i "$container_id" php bin/console doctrine:migrations:execute DoctrineMigrations\\Version20250609104026 --up --no-interaction
+          docker exec -i name=cv-maker-php-1 php bin/console doctrine:migrations:execute DoctrineMigrations\\Version20250609104026 --up --no-interaction
 
           EOF
