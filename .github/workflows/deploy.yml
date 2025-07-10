@@ -99,8 +99,8 @@ jobs:
           docker compose -f compose-prod.yml up -d --remove-orphans
 
           echo "Exécution des migrations Doctrine (génération des tables)"
-          if ! docker exec -u www-data cv-maker-php-1 php bin/console doctrine:migrations:status | grep -q "Version20250609104026.php.*migrated"; then
-            docker exec -u www-data -i cv-maker-php-1 php bin/console doctrine:migrations:execute Version20250609104026.php --up --no-interaction
+          if ! docker exec -u www-data cv-maker-php-1 php bin/console doctrine:migrations:status | grep -q "Version20250609104026.*migrated"; then
+            docker exec -u www-data -i cv-maker-php-1 php bin/console doctrine:migrations:execute Version20250609104026 --up --no-interaction
           fi
 
 
