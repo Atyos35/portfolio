@@ -40,6 +40,7 @@ COPY composer.* symfony.* ./
 COPY . .
 
 RUN composer install --no-interaction --optimize-autoloader
+RUN php bin/console doctrine:migrations:migrate --no-interaction || true
 RUN composer dump-autoload --optimize
 RUN npm ci
 RUN npm run build
