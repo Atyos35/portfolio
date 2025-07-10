@@ -76,7 +76,7 @@ jobs:
           CADDY_MERCURE_JWT_SECRET=${{ secrets.CADDY_MERCURE_JWT_SECRET }}
           DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@database:3306/${{ secrets.MYSQL_DATABASE }}?serverVersion=8&charset=utf8mb4
           MERCURE_URL=http://localhost/.well-known/mercure
-          MERCURE_PUBLIC_URL=http://92.162.186.29/.well-known/mercure
+          MERCURE_PUBLIC_URL=http://cv-maker.duckdns.org/.well-known/mercure
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
           MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
           APP_SECRET=${{ secrets.APP_SECRET }}
