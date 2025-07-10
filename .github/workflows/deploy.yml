@@ -99,7 +99,6 @@ jobs:
           docker compose -f compose-prod.yml up -d --remove-orphans
 
           echo "Run Doctrine Migrations"
-          docker compose exec -T php php bin/console doctrine:migrations:status | grep 'New Migrations' | grep -q '0' || \
-          docker compose exec -T php php bin/console doctrine:migrations:migrate --no-interaction
-
+          docker exec -u www-data -i $(docker ps -qf "name=cv-maker-php") php bin/console doctrine:migrations:migrate --no-interaction
+          
           EOF
