@@ -39,6 +39,10 @@ COPY composer.* symfony.* ./
 
 COPY . .
 
+RUN mkdir -p public/uploads \
+ && chown -R www-data:www-data public/uploads \
+ && chmod -R 775 public/uploads
+
 RUN composer install --no-interaction --optimize-autoloader
 RUN php bin/console doctrine:migrations:migrate --no-interaction || true
 RUN composer dump-autoload --optimize
