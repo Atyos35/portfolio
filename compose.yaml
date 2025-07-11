@@ -1,47 +1,17 @@
-services:
-  php:
-    build:
-      context: .
-      dockerfile: DockerfileDev
-    image: ${IMAGES_PREFIX:-}app-php
-    restart: unless-stopped
-    networks:
-      - database_network
-    environment:
-      SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
-      MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      DATABASE_URL: ${DATABASE_URL}
-      MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
-      MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}/.well-known/mercure}
-      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      SYMFONY_VERSION: ${SYMFONY_VERSION:-}
-      STABILITY: ${STABILITY:-stable}
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-    ports:
-      - target: 80
-        published: ${HTTP_PORT:-80}
-        protocol: tcp
-      - target: 443
-        published: ${HTTPS_PORT:-443}
-        protocol: tcp
-      - target: 443
-        published: ${HTTP3_PORT:-443}
-        protocol: udp
+version: "3.8"
 
+services:
   database:
-    image: mysql:${MYSQL_VERSION}
+    image: mysql:8.4.5
     networks:
       - database_network
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: portfolio
+      MYSQL_ROOT_PASSWORD: root
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       timeout: 5s
       retries: 10
       start_period: 20s
@@ -49,8 +19,6 @@ services:
       - database_data:/var/lib/mysql:rw
 
 volumes:
-  caddy_data:
-  caddy_config:
   database_data:
 
 networks:
