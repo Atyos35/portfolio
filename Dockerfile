@@ -1,49 +1,56 @@
-#syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1
 
-FROM dunglas/frankenphp:1-php8.3 AS frankenphp_upstream
-
-FROM frankenphp_upstream AS frankenphp_base
-
-WORKDIR /app
-
-VOLUME /app/var/
+FROM php:8.3-fpm AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     acl \
     file \
     gettext \
     git \
+    curl \
+    unzip \
+    libzip-dev \
+    libicu-dev \
+    libonig-dev \
+    libxml2-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN set -eux; \
-    install-php-extensions \
-        @composer \
-        apcu \
-        intl \
-        opcache \
-        zip
+RUN docker-php-ext-install \
+    intl \
+    opcache \
+    pdo \
+    pdo_mysql \
+    zip
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-COPY --link frankenphp/conf.d/10-app.ini $PHP_INI_DIR/app.conf.d/
-COPY --link --chmod=755 frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-COPY --link frankenphp/Caddyfile /etc/caddy/Caddyfile
+RUN curl -fsSL https://nodejs.org/dist/v22.14.0/node-v22.14.0-linux-arm64.tar.xz -o node.tar.xz \
+ && mkdir -p /usr/local/lib/nodejs \
+ && tar -xJf node.tar.xz -C /usr/local/lib/nodejs \
+ && rm node.tar.xz \
+ && ln -s /usr/local/lib/nodejs/node-v22.14.0-linux-arm64/bin/node /usr/bin/node \
+ && ln -s /usr/local/lib/nodejs/node-v22.14.0-linux-arm64/bin/npm /usr/bin/npm \
+ && ln -s /usr/local/lib/nodejs/node-v22.14.0-linux-arm64/bin/npx /usr/bin/npx
 
-ENTRYPOINT ["docker-entrypoint"]
-HEALTHCHECK --start-period=60s CMD curl -f http://localhost:2019/metrics || exit 1
-CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
+WORKDIR /app
 
-FROM frankenphp_base AS frankenphp_dev
+COPY composer.* symfony.* ./
 
-ENV APP_ENV=dev XDEBUG_MODE=off
+COPY . .
 
-RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+RUN composer install --no-interaction --optimize-autoloader
+RUN php bin/console doctrine:migrations:migrate --no-interaction || true
+RUN composer dump-autoload --optimize
+RUN npm ci
+RUN npm run build
 
-RUN set -eux; \
-    install-php-extensions \
-        xdebug
+RUN mkdir -p var/cache var/log var/sessions \
+ && composer dump-env prod \
+ && composer run-script --no-dev post-install-cmd \
+ && chmod +x bin/console \
+ && chown -R www-data:www-data var \
+ && chmod -R 775 var \
+ && sync
 
-COPY --link frankenphp/conf.d/20-app.dev.ini $PHP_INI_DIR/app.conf.d/
-
-CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--watch" ]
+CMD ["php-fpm"]
