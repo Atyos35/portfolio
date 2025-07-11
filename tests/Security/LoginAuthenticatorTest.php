@@ -11,21 +11,24 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Routing\RouterInterface;
 
 class LoginAuthenticatorTest extends TestCase
 {
     private $userRepository;
     private $loginAuthenticator;
     private $mockUser;
+    private RouterInterface $router;
 
     protected function setUp(): void
     {
         $this->userRepository = $this->createMock(UserRepository::class);
+        $this->router = $this->createMock(RouterInterface::class);
 
         $this->mockUser = $this->createMock(User::class);
         $this->mockUser->method('getEmail')->willReturn('user@example.com');
 
-        $this->loginAuthenticator = new LoginAuthenticator($this->userRepository);
+        $this->loginAuthenticator = new LoginAuthenticator($this->userRepository, $this->router);
     }
 
     public function testSupports()
@@ -115,5 +118,20 @@ class LoginAuthenticatorTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(['error' => 'An authentication exception occurred.'], json_decode($response->getContent(), true));
+    }
+
+    public function testStartRedirectsToLogin()
+    {
+        $request = Request::create('/any-protected-route');
+
+        $this->router->expects($this->once())
+            ->method('generate')
+            ->with('app_login')
+            ->willReturn('/login');
+
+        $response = $this->loginAuthenticator->start($request);
+
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\RedirectResponse::class, $response);
+        $this->assertEquals('/login', $response->getTargetUrl());
     }
 }
