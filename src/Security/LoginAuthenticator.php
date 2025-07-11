@@ -15,12 +15,16 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-class LoginAuthenticator extends AbstractAuthenticator
+class LoginAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
 
     public function __construct(
         private readonly UserRepository $userRepository,
+        private readonly RouterInterface $router
     ) {
     }
     public function supports(Request $request): ?bool
@@ -69,5 +73,10 @@ class LoginAuthenticator extends AbstractAuthenticator
         string $username): ?\App\Entity\User
     {
         return $this->userRepository->findOneByEmail($username);
+    }
+
+    public function start(Request $request, AuthenticationException $authException = null): Response
+    {
+        return new RedirectResponse($this->router->generate('app_login'));
     }
 }

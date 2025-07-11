@@ -33,6 +33,10 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         CsrfTokenManagerInterface $csrfTokenManager): Response
     {
+        if ($this->getUser() && $request->isMethod('GET')) {
+            return $this->redirectToRoute('app_home');
+        }
+
         if ($request->isMethod('GET')) {
             return $this->render('registration/register.html.twig');
         }
