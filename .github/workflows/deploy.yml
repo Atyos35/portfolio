@@ -6,7 +6,7 @@ permissions:
 
 on:
   push:
-    branches: [mep]
+    branches: [main]
 
 jobs:
   build-and-push:
