@@ -1,8 +1,0 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}User{% endblock %}
-
-{% block body %}
-    <div {{ react_component('user/userGet',
-        { action: path('app_user_get') }) }}></div>
-{% endblock %}
