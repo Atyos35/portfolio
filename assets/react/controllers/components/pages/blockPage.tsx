@@ -37,7 +37,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ blocks: initialBlock, csrfToken }
         await deleteEntity({
           action: `/block/${blockToDelete}`,
           csrfToken,
-          entityName: "la formation",
+          entityName: "le bloc de compétences",
         });
         setBlocks((prev) => prev.filter((block) => block.id !== blockToDelete));
         setIsModalOpen(false);

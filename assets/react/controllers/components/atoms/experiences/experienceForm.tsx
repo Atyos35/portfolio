@@ -3,6 +3,7 @@ import { Experience } from '../../../models/experiences/experience.model';
 import SaveButton from '../saveButton';
 import { SimpleEditor } from '../../../utils/tipTap/simpleEditor';
 import { useState } from 'react';
+import { DateRangeFields } from "../forms/dateRangeFields";
 
 type ExperienceFormProps = {
   initialValues: Experience;
@@ -45,27 +46,7 @@ export default function ExperienceForm({
         {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>}
       </div>
 
-      <div className="flex flex-col">
-        <label htmlFor="start_date" className="mb-1">Date de début</label>
-        <input
-          id="start_date"
-          type="date"
-          {...register('start_date')}
-          className="border border-gray-300 rounded px-3 py-2 bg-white"
-        />
-        {errors.start_date && <p className="text-sm text-red-600 mt-1">{errors.start_date.message}</p>}
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="end_date" className="mb-1">Date de fin (optionnel)</label>
-        <input
-          id="end_date"
-          type="date"
-          {...register('end_date')}
-          className="border border-gray-300 rounded px-3 py-2 bg-white"
-        />
-        {errors.end_date && <p className="text-sm text-red-600 mt-1">{errors.end_date.message}</p>}
-      </div>
+      <DateRangeFields register={register} errors={errors} />
 
       <div className="flex flex-col">
         <label htmlFor="description" className="mb-1">Description</label>

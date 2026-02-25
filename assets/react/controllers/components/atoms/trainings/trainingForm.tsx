@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DateRangeFields } from "../forms/dateRangeFields";
 import { useTrainingForm } from './useTrainingForm';
 import { Training } from '../../../models/trainings/training.model';
 import SaveButton from '../saveButton';
@@ -45,27 +46,7 @@ export default function TrainingForm({
         {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>}
       </div>
 
-      <div className="flex flex-col">
-        <label htmlFor="start_date" className="mb-1">Date de début</label>
-        <input
-          id="start_date"
-          type="date"
-          {...register('start_date')}
-          className="border border-gray-300 rounded px-3 py-2 bg-white"
-        />
-        {errors.start_date && <p className="text-sm text-red-600 mt-1">{errors.start_date.message}</p>}
-      </div>
-
-      <div className="flex flex-col">
-        <label htmlFor="end_date" className="mb-1">Date de fin (optionnel)</label>
-        <input
-          id="end_date"
-          type="date"
-          {...register('end_date')}
-          className="border border-gray-300 rounded px-3 py-2 bg-white"
-        />
-        {errors.end_date && <p className="text-sm text-red-600 mt-1">{errors.end_date.message}</p>}
-      </div>
+      <DateRangeFields register={register} errors={errors} />
 
       <div className="flex flex-col">
         <label htmlFor="description" className="mb-1">Description</label>
@@ -84,9 +65,9 @@ export default function TrainingForm({
       </div>
 
       <div className="flex flex-col">
-        <label htmlFor="company" className="mb-1">Entreprise</label>
+        <label htmlFor="school" className="mb-1">École / organisme de formation</label>
         <input
-          id="company"
+          id="school"
           {...register('school')}
           className="border border-gray-300 rounded px-3 py-2 bg-white"
         />
