@@ -16,12 +16,13 @@ interface Props {
 }
 
 const UpdateProfilePictureModal: React.FC<Props> = ({ isOpen, onClose, onUpload, csrfToken }) => {
-  const [files, setFiles] = useState<any[]>([]);
+  const [files, setFiles] = useState<unknown[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (files.length > 0 && files[0].file) {
-      onUpload(files[0].file, csrfToken);
+    const first = files[0] as { file?: File } | undefined;
+    if (files.length > 0 && first?.file) {
+      onUpload(first.file, csrfToken);
       onClose();
     }
   };

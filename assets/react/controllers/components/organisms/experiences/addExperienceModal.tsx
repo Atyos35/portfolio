@@ -1,13 +1,13 @@
 import React from "react";
 import Modal from "../../molecules/modal/modal";
 import ExperienceForm from "../../atoms/experiences/experienceForm";
-import { emptyExperience } from "../../../models/experiences/experience.model";
+import { emptyExperience, Experience } from "../../../models/experiences/experience.model";
 
 interface AddExperienceModalProps {
   isOpen: boolean;
   onClose: () => void;
   csrfToken: string;
-  onAdd: (values: any) => void;
+  onAdd: (values: Experience) => void;
 }
 
 export default function AddExperienceModal({

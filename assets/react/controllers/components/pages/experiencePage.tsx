@@ -51,9 +51,14 @@ const ExperiencePage: React.FC<ExperiencePageProps> = ({ experiences: initialExp
         setExperiences((prev) => prev.filter((exp) => exp.id !== experienceToDelete));
         setIsModalOpen(false);
         setExperienceToDelete(null);
-      } catch (error: any) {
-        console.error(error.message);
-        alert("Erreur lors de la suppression : " + error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          alert("Erreur lors de la suppression : " + error.message);
+        } else {
+          console.error(error);
+          alert("Erreur lors de la suppression");
+        }
       }
     }
   };

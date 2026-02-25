@@ -4,13 +4,17 @@ import ExperiencePage from './experiencePage';
 import TrainingPage from './trainingPage';
 import BlockPage from './blockPage';
 import { motion, AnimatePresence } from 'framer-motion';
+import { User } from '../../models/user/user.model';
+import { Experience } from '../../models/experiences/experience.model';
+import { Training } from '../../models/trainings/training.model';
+import { Block } from '../../models/blocks/block.model';
 const Loader = require('../../../../images/waiter.gif');
 
 type HomePageProps = {
-  user: any;
-  experiences: any;
-  trainings: any;
-  blocks: any;
+  user: User;
+  experiences: Experience[];
+  trainings: Training[];
+  blocks: Block[];
   editUserAction: string;
   csrfTokens: {
     user: string;

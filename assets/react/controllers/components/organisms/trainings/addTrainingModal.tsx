@@ -1,13 +1,13 @@
 import React from "react";
 import Modal from "../../molecules/modal/modal";
 import TrainingForm from "../../atoms/trainings/trainingForm";
-import { emptyTraining } from "../../../models/trainings/training.model";
+import { emptyTraining, Training } from "../../../models/trainings/training.model";
 
 interface AddTrainingModalProps {
   isOpen: boolean;
   onClose: () => void;
   csrfToken: string;
-  onAdd: (values: any) => void;
+  onAdd: (values: Training) => void;
 }
 
 export default function AddTrainingModal({

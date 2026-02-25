@@ -10,7 +10,7 @@ import HidePwIcon from "../../../components/atoms/hidePwIcon";
 
 interface TrainingItemProps {
   training: Training;
-  onEdit: (values: any) => void;
+  onEdit: (training: Training) => void;
   onDelete: (id: number) => void;
   showCheckIcon?: boolean;
   flash?: boolean;

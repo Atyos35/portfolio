@@ -9,7 +9,7 @@ import UpdateProfilePictureModal from './updateProfilePictureModal';
 
 interface UserItemProps {
   user: User;
-  onEdit: (values: any) => void;
+  onEdit: (user: User) => void;
   onProfilePictureUpdated: (user: User) => void;
   showCheckIcon?: boolean;
   flash?: boolean;

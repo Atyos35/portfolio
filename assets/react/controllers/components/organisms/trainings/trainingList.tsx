@@ -4,7 +4,7 @@ import TrainingItem from './trainingItem';
 
 interface TrainingListProps {
   trainings: Training[];
-  onEdit: (values: any) => void;
+  onEdit: (training: Training) => void;
   onDeleted: (id: number) => void;
   editedTrainingId?: number | null;
   flashSuccessId?: number | null;

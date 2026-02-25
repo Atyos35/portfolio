@@ -1,13 +1,13 @@
 import React from "react";
 import Modal from "../../molecules/modal/modal";
 import BlockForm from "../../atoms/blocks/blockForm";
-import { emptyBlock } from "../../../models/blocks/block.model";
+import { emptyBlock, Block } from "../../../models/blocks/block.model";
 
 interface AddBlockModalProps {
   isOpen: boolean;
   onClose: () => void;
   csrfToken: string;
-  onAdd: (values: any) => void;
+  onAdd: (values: Block) => void;
 }
 
 export default function AddBlockModal({

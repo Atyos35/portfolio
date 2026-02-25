@@ -2,17 +2,22 @@ import * as Turbo from "@hotwired/turbo";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 
+type LoginFormData = {
+    username: string;
+    password: string;
+};
+
 export function useLoginForm(action: string, csrfToken: string) {
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm();
+    } = useForm<LoginFormData>();
 
     const [errorMessage, setErrorMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false); // 👈
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: LoginFormData) => {
         setErrorMessage("");
         if (!csrfToken) {
             console.error("Token CSRF non disponible");
